@@ -103,4 +103,7 @@ void print_hex(unsigned char *thing, size_t size);
 // Compare two arbitrary data
 char compare_data(unsigned char *d1, size_t s1, unsigned char *d2, size_t s2);
 
+Bloc_t encode_to_bloc(char *in);
+
+
 #endif
