@@ -2,11 +2,43 @@
 
 #include "utils.h"
 
-Bloc_t new_bloc(int l, char * pred, long t, char* ope, char* c, char*s) {
-    level
 
+Bloc_t new_bloc(int l, char *pred, long t, char *ope, char *c, char* s) {
+    Bloc_t res = (Bloc_t) malloc(sizeof(struct bloc));
+    res->level = l;
+    res->predecessor = pred;
+    res->timestamp = t; 
+    res->operations_hash = ope; 
+    res->context_hash  = c; 
+    res->signature = s;
+
+    return res;
 }
 
+
+
+/*
+0000002c1c80203a30e5de4d980cc555131d1b4a4750edc82c0c443179d88de1ae4f6cdf00000000
+616304e5000000000000000000000000000000000000000000000000000000000000000022a00d1c
+8c0fbaefedd71ddb83d455033efd259a8f0adf189b9f850a0d1945f2cc3faffc696c86db13d50752
+fdb7edd0ee1ce19ab350f60899939fc139d58996419c13b812b7f005fafaf23924d2f1df555036bc
+61e7b67cb679375e5756b306
+*/
+
+/*
+Bloc_t convert_txt_to_bloc (const char *b){
+    //tronquer le txt 
+    int level = 
+    
+
+return  0;
+}
+
+char* convert_bloc_to_txt(Bloc_t bloc) {
+  char txt[344] = "";
+  return name;
+}
+*/
 
 void print_bloc(Bloc_t bloc) {
     printf("===== BLOC =====\n");
