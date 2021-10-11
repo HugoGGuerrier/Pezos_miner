@@ -1,3 +1,6 @@
 # Make files
 obj
 out
+
+# VScode file
+.vscode
