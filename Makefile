@@ -4,7 +4,7 @@ CFLAGS=-W -Wall -O3
 LDFLAGS=
 EXEC=out/miner
 
-SRC=src/main.c src/utils.c src/miner.c src/client.c src/server.c
+SRC=src/main.c src/utils.c src/client.c src/server.c
 LIB=${SRC:src%.c=include%.h}
 OBJ=${SRC:src%.c=obj%.o}
 
