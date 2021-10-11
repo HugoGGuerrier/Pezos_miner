@@ -96,13 +96,13 @@ void print_bloc(Bloc_t bloc);
 void print_op(Operation_t op);
 
 // Print a data in hexadecimal form
-void print_hex(unsigned char *thing, size_t size);
+void print_hex(char *thing, size_t size);
 
 
 // --- Miscallenous functions
 
 // Compare two arbitrary data
-char compare_data(unsigned char *d1, size_t s1, unsigned char *d2, size_t s2);
+char compare_data(char *d1, size_t s1, char *d2, size_t s2);
 
 Bloc_t encode_to_bloc(char *in);
 

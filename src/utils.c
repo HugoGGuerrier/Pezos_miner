@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "utils.h"
 
@@ -38,16 +40,16 @@ void print_bloc(Bloc_t bloc) {
     printf("\n");
 }
 
-void print_hex(unsigned char *thing, size_t size) {
+void print_hex(char *thing, size_t size) {
     for(size_t i = 0; i < size ; i++) {
         printf("%02x", thing[i]);
     }
 }
 
 
-char compare_data(unsigned char *d1, size_t s1, unsigned char *d2, size_t s2) {
+char compare_data(char *d1, size_t s1, char *d2, size_t s2) {
     if (s1 != s2) return 0;
-    for (int i = 0 ; i < s1 ; i++) {
+    for (size_t i = 0 ; i < s1 ; i++) {
         if (d1[i] != d2[i]) return 0;
     }
     return 1;
@@ -97,7 +99,7 @@ Bloc_t encode_to_bloc(char *in) {
         }
     }
 
-    return new_bloc(level, predecessor, timestamp, operations_hash, operations_hash, signature) 
+    return new_bloc(level, predecessor, timestamp, operations_hash, operations_hash, signature);
 
 
 }

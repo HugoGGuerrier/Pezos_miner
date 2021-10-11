@@ -62,6 +62,7 @@ int start_client(const char *addr, unsigned short port) {
     printf("Authentification success !\n");
 
     // Start the client loop
+    printf("Start listening to the server...\n");
     return client_loop();
 }
 
@@ -91,20 +92,32 @@ int auth() {
         return 1;
     }
 
+    if(test_connection() != 0) {
+        printf("Error in authentification : Server didn't acceot the connection\n");
+        return 1;
+    }
+
     return 0;
 }
 
 int client_loop() {
-
+    return 0;
 }
 
 
 // --- Client manipulation functions
 
-int handle_message(char *buffer) {
+int test_connection() {
+    // TODO : Test the connection by sending a simple request
+    return 0;
+}
 
+int handle_message() {
+    // TODO : Handle the message recieving
+    return 0;
 }
 
 int send_message(Message_t message) {
-    
+    // TODO : Encode the message and send it to the server
+    return 0;
 }

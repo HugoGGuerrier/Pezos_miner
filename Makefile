@@ -2,9 +2,9 @@ CC=gcc
 
 CFLAGS=-W -Wall -O3
 LDFLAGS=-Llib
-EXEC=out/miner
+EXEC=out/pezos_miner
 
-SRC=src/main.c src/utils.c src/client.c src/server.c
+SRC=src/main.c src/utils.c src/client.c src/hash.c src/signature.c
 LIB=${SRC:src%.c=include%.h}
 OBJ=${SRC:src%.c=obj%.o}
 
