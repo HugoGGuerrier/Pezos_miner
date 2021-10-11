@@ -26,4 +26,10 @@ struct {
 
 Bloc_t new_bloc(int l, char * pred, long t, char* ope, char* c, char*s);
 
+void print_bloc(Bloc_t bloc);
+
+void print_hex(unsigned char *thing, size_t size);
+
+char compare_data(unsigned char *d1, unsigned char *d2, size_t s1, size_t s2);
+
 #endif
