@@ -15,6 +15,13 @@
 #define RAND_SEED_SIZE 24
 #define HASH_SIZE 32
 
+// --- Function declaration
+
+int auth();
+int client_loop();
+int test_connection();
+int handle_message();
+
 
 // --- Global variables definition
 
@@ -84,10 +91,10 @@ int auth() {
 
     // Send the signed hash value of the random seed
     char rand_hash[HASH_SIZE];
-    hash(&rand_seed, RAND_SEED_SIZE, &rand_hash);
+    hash(rand_seed, RAND_SEED_SIZE, rand_hash);
     char rand_hash_sign[64];
-    sign(&rand_hash_sign, &rand_hash, HASH_SIZE);
-    if(write(sock_id, &rand_hash_sign, 64) == -1) {
+    sign(rand_hash_sign, rand_hash, HASH_SIZE);
+    if(write(sock_id, rand_hash_sign, 64) == -1) {
         printf("Error in authentification : Cannot send the random seed hash signature to the server\n");
         return 1;
     }
