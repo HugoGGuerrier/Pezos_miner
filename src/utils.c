@@ -7,9 +7,9 @@ Bloc_t new_bloc(int l, char *pred, long t, char *ope, char *c, char* s) {
     Bloc_t res = (Bloc_t) malloc(sizeof(struct bloc));
     res->level = l;
     res->predecessor = pred;
-    res->timestamp = t; 
-    res->operations_hash = ope; 
-    res->context_hash  = c; 
+    res->timestamp = t;
+    res->operations_hash = ope;
+    res->context_hash  = c;
     res->signature = s;
 
     return res;
