@@ -15,14 +15,14 @@ enum message {
 
 typedef struct bloc *Bloc_t;
 
-struct {
+struct bloc {
     int level;
     char predecessor[32];
     long timestamp; 
     char operations_hash[32];
     char context_hash[32];
     char signature[128];
-} bloc;
+};
 
 Bloc_t new_bloc(int l, char * pred, long t, char* ope, char* c, char*s);
 

@@ -9,7 +9,17 @@ Bloc_t new_bloc(int l, char * pred, long t, char* ope, char* c, char*s) {
 
 
 void print_bloc(Bloc_t bloc) {
-
+    printf("===== BLOC =====\n");
+    printf("level : %d\n", bloc->level);
+    printf("predecessor : ");
+    print_hex(bloc->predecessor, 32);
+    printf("timestamp : %ld\n", bloc->timestamp); //todo : format heure
+    printf("operations hash : ");
+    print_hex(bloc->operations_hash, 32);
+    printf("context hash : ");
+    print_hex(bloc->context_hash, 32);
+    printf("signature : ");
+    print_hex(bloc->signature, 128);
 }
 
 void print_hex(unsigned char *thing, size_t size) {
