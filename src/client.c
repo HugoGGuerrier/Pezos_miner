@@ -7,6 +7,14 @@
 #include <sys/ioctl.h>
 
 #include "client.h"
+#include "hash.h"
+#include "signature.h"
+
+// --- Constant definition
+
+#define RAND_SEED_SIZE 24
+#define HASH_SIZE 32
+
 
 // --- Global variables definition
 
@@ -60,15 +68,30 @@ int start_client(const char *addr, unsigned short port) {
 int auth() {
     // Get the random seed from the server
     if(read(sock_id, buff, BUFF_SIZE) == -1) {
-        printf("Error in authentification : Cannor read the random seed from the server\n");
+        printf("Error in authentification : Cannot read the random seed from the server\n");
+        return 1;
     }
-    char rand_seed[24];
-    memcpy(&rand_seed, &buff, sizeof(rand_seed));
+    char rand_seed[RAND_SEED_SIZE];
+    memcpy(&rand_seed, &buff, RAND_SEED_SIZE);
 
     // Send the key
-    
+    char public_key[KEY_SIZE] = PUBLIC_KEY;
+    if(write(sock_id, &public_key, KEY_SIZE) == -1) {
+        printf("Error in authentification : Cannot send the public key to the server\n");
+        return 1;
+    }
 
     // Send the signed hash value of the random seed
+    char rand_hash[HASH_SIZE];
+    hash(&rand_seed, RAND_SEED_SIZE, &rand_hash);
+    char rand_hash_sign[64];
+    sign(&rand_hash_sign, &rand_hash, HASH_SIZE);
+    if(write(sock_id, &rand_hash_sign, 64) == -1) {
+        printf("Error in authentification : Cannot send the random seed hash signature to the server\n");
+        return 1;
+    }
+
+    return 0;
 }
 
 int client_loop() {
