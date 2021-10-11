@@ -13,7 +13,7 @@ void print_bloc(Bloc_t bloc) {
     printf("level : %d\n", bloc->level);
     printf("predecessor : ");
     print_hex(bloc->predecessor, 32);
-    printf("timestamp : %ld\n", bloc->timestamp); //todo : format heure
+    printf("timestamp : %ld\n", bloc->timestamp); // TODO : format heure
     printf("operations hash : ");
     print_hex(bloc->operations_hash, 32);
     printf("context hash : ");
