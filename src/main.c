@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "main.h"
-#include "miner.h"
 
 int main(int argc, char const *argv[])
 {
