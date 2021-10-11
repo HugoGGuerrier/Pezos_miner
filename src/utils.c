@@ -52,3 +52,52 @@ char compare_data(unsigned char *d1, size_t s1, unsigned char *d2, size_t s2) {
     }
     return 1;
 }
+
+
+Bloc_t encode_to_bloc(char *in) {
+
+  
+    char *level_temp =  malloc (8 * sizeof (char));
+    char *predecessor =  malloc (64 * sizeof (char));
+    char *timestamp_temp =   malloc (16 * sizeof (char));
+    char *operations_hash =  malloc (64 * sizeof (char));
+    char *context_hash =  malloc (64 * sizeof (char));
+    char *signature =  malloc (128 * sizeof (char));
+    int level =0; 
+
+    strncpy(level_temp, in, 8);
+    strncpy(predecessor, in+8, 64);
+    strncpy(timestamp_temp, in+8+64, 16);
+    strncpy(operations_hash, in+8+64+16, 64);
+    strncpy(context_hash, in+8+64+16+64, 64);
+    strncpy(signature, in+8+64+16+64+64, 128);
+    char *eptr;
+    long timestamp = strtol(timestamp_temp, &eptr, 10);
+    int base = 1;
+    int i = 0, value, length;
+
+
+    length = strlen(level_temp);
+    for(i = length--; i >= 0; i--)
+    {
+        if(level_temp[i] >= '0' && level_temp[i] <= '9')
+        {
+            level += (level_temp[i] - 48) * base;
+            base *= 16;
+        }
+        else if(level_temp[i] >= 'A' && level_temp[i] <= 'F')
+        {
+            level += (level_temp[i] - 55) * base;
+            base *= 16;
+        }
+        else if(level_temp[i] >= 'a' && level_temp[i] <= 'f')
+        {
+            level += (level_temp[i] - 87) * base;
+            base *= 16;
+        }
+    }
+
+    return new_bloc(level, predecessor, timestamp, operations_hash, operations_hash, signature) 
+
+
+}
