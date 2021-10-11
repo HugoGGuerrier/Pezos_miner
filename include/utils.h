@@ -101,6 +101,6 @@ void print_hex(unsigned char *thing, size_t size);
 // --- Miscallenous functions
 
 // Compare two arbitrary data
-char compare_data(unsigned char *d1, unsigned char *d2, size_t s1, size_t s2);
+char compare_data(unsigned char *d1, size_t s1, unsigned char *d2, size_t s2);
 
 #endif
