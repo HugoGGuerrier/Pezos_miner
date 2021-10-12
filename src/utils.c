@@ -5,6 +5,38 @@
 #include "utils.h"
 
 
+// --- Message functions 
+
+Message_t new_message(Message_Type_t tag, char *data) {
+    Message_t res = (Message_t) malloc(sizeof(struct message));
+    res->tag = tag;
+    res->data = data;
+    return res;
+}
+
+void delete_message(Message_t message) {
+    free(message->data);
+    free(message);
+}
+
+
+// --- Operation functions
+
+Operation_t new_operation(Operation_Type_t op_type, char *data) {
+    Operation_t res = (Operation_t) malloc(sizeof(struct operation));
+    res->op_type = op_type;
+    res->data = data;
+    return res;
+}
+
+void delete_operation(Operation_t operation) {
+    free(operation->data);
+    free(operation);
+}
+
+
+// --- Bloc functions
+
 Bloc_t new_bloc(int level, char *pred, long time, char *ope, char *ctx_h, char* sig) {
     Bloc_t res = (Bloc_t) malloc(sizeof(struct bloc));
     res->level = level;
@@ -24,6 +56,8 @@ void delete_block(Bloc_t bloc) {
     free(bloc);
 }
 
+
+// --- Printing functions
 
 void print_bloc(Bloc_t bloc) {
     printf("===== BLOC =====\n");
@@ -46,6 +80,8 @@ void print_hex(char *thing, size_t size) {
     }
 }
 
+
+// --- Miscallenous functions 
 
 char compare_data(char *d1, size_t s1, char *d2, size_t s2) {
     if (s1 != s2) return 0;

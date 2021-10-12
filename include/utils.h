@@ -25,7 +25,7 @@ typedef enum {
 
 
 // --- Type that represents a message
-typedef struct message Message_t;
+typedef struct message *Message_t;
 
 struct message {
     Message_Type_t tag;
@@ -40,14 +40,14 @@ typedef enum {
     BAD_OPERATIONS_HASH,
     BAD_CONTEXT_HASH,
     BAD_SIGNATURE,
-} Operation_type_t;
+} Operation_Type_t;
 
 
 // --- Type that represent an operation
 typedef struct operation *Operation_t;
 
 struct operation {
-    Operation_type_t op_type;
+    Operation_Type_t op_type;
     char *data;
 };
 
@@ -76,7 +76,7 @@ Message_t new_message(Message_Type_t tag, char *data);
 void delete_message(Message_t message);
 
 // Create a new operation
-Operation_t new_operation(Operation_t op_type, char *data);
+Operation_t new_operation(Operation_Type_t op_type, char *data);
 
 // Delete an operation
 void delete_operation(Operation_t operation);
@@ -90,10 +90,14 @@ void delete_block(Bloc_t bloc);
 
 // --- Printing functions
 
+// Print an operation
+void print_op(Operation_t op);
+
 // Print a bloc
 void print_bloc(Bloc_t bloc);
 
-void print_op(Operation_t op);
+// Print a message
+void print_message(Message_t message);
 
 // Print a data in hexadecimal form
 void print_hex(char *thing, size_t size);
@@ -103,8 +107,5 @@ void print_hex(char *thing, size_t size);
 
 // Compare two arbitrary data
 char compare_data(char *d1, size_t s1, char *d2, size_t s2);
-
-Bloc_t encode_to_bloc(char *in);
-
 
 #endif

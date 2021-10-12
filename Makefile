@@ -4,7 +4,7 @@ CFLAGS=-W -Wall -O3
 LDFLAGS=-Llib
 EXEC=out/pezos_miner
 
-SRC=src/main.c src/utils.c src/client.c src/hash.c src/signature.c
+SRC=src/main.c src/utils.c src/client.c src/bloc.c src/message.c src/hash.c src/signature.c
 LIB=${SRC:src%.c=include%.h}
 OBJ=${SRC:src%.c=obj%.o}
 
