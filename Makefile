@@ -29,7 +29,7 @@ clean:
 	rm -rf obj/*
 
 run: all
-	export LD_LIBRARY_PATH=./lib
+	export LD_LIBRARY_PATH=./lib; \
 	./${EXEC}
 
 purge: clean
