@@ -24,15 +24,6 @@ typedef enum {
 } Message_Type_t;
 
 
-// --- Type that represents a message
-typedef struct message *Message_t;
-
-struct message {
-    Message_Type_t tag;
-    char *data;
-};
-
-
 // --- Enumeration for all server operation type
 typedef enum {
     BAD_PREDECESSOR,
@@ -43,19 +34,39 @@ typedef enum {
 } Operation_Type_t;
 
 
+// --- Type that represents a message
+typedef struct message *Message_t;
+
+struct message {
+    Message_Type_t tag;
+    unsigned short data_size;
+    char *data;
+};
+
+
 // --- Type that represent an operation
 typedef struct operation *Operation_t;
 
 struct operation {
     Operation_Type_t op_type;
+    unsigned short data_size;
     char *data;
 };
 
 
-// --- Type that represents a bloc
-typedef struct bloc *Bloc_t;
+// --- Type thar represent an operations list
+typedef struct operations *Operations_t;
 
-struct bloc {
+struct operations {
+    Operation_t head;
+    Operations_t tail;
+};
+
+
+// --- Type that represents a block
+typedef struct block *Block_t;
+
+struct block {
     int level;
     char *predecessor;
     long timestamp; 
@@ -63,6 +74,31 @@ struct bloc {
     char *context_hash;
     char *signature;
 };
+
+
+// --- Type that represents a state
+typedef struct state *State_t;
+
+struct state {
+
+};
+
+
+// --- Type that represents an account
+typedef struct account *Account_t;
+
+struct account {
+
+};
+
+
+// --- Type that represent an accout list
+typedef struct accounts *Accounts_t;
+
+struct accounts {
+
+};
+
 
 // ----- Utils function definitions -----
 
@@ -81,11 +117,17 @@ Operation_t new_operation(Operation_Type_t op_type, char *data);
 // Delete an operation
 void delete_operation(Operation_t operation);
 
-// Create a new bloc from the given data
-Bloc_t new_bloc(int l, char * pred, long t, char* ope, char* c, char*s);
+// Create a new operaitons list
+Operations_t new_operations(Operation_t head, Operations_t tail);
+
+// Delete recursively an operations list
+void delete_operations(Operations_t operations);
+
+// Create a new block from the given data
+Block_t new_block(int l, char * pred, long t, char* ope, char* c, char*s);
 
 // Delete a block
-void delete_block(Bloc_t bloc);
+void delete_block(Block_t block);
 
 
 // --- Printing functions
@@ -93,8 +135,8 @@ void delete_block(Bloc_t bloc);
 // Print an operation
 void print_op(Operation_t op);
 
-// Print a bloc
-void print_bloc(Bloc_t bloc);
+// Print a block
+void print_block(Block_t block);
 
 // Print a message
 void print_message(Message_t message);

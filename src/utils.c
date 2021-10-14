@@ -35,10 +35,27 @@ void delete_operation(Operation_t operation) {
 }
 
 
-// --- Bloc functions
+// --- Operations functions
 
-Bloc_t new_bloc(int level, char *pred, long time, char *ope, char *ctx_h, char* sig) {
-    Bloc_t res = (Bloc_t) malloc(sizeof(struct bloc));
+Operations_t new_operations(Operation_t head, Operations_t tail) {
+    Operations_t res = (Operations_t) malloc(sizeof(struct operations));
+    res->head = head;
+    res->tail = tail;
+    return res;
+}
+
+void delete_operations(Operations_t operations) {
+    if(operations != NULL) {
+        delete_operations(operations->tail);
+        free(operations->head);
+    }
+}
+
+
+// --- Block functions
+
+Block_t new_block(int level, char *pred, long time, char *ope, char *ctx_h, char* sig) {
+    Block_t res = (Block_t) malloc(sizeof(struct block));
     res->level = level;
     res->predecessor = pred;
     res->timestamp = time;
@@ -48,29 +65,29 @@ Bloc_t new_bloc(int level, char *pred, long time, char *ope, char *ctx_h, char* 
     return res;
 }
 
-void delete_block(Bloc_t bloc) {
-    free(bloc->predecessor);
-    free(bloc->operations_hash);
-    free(bloc->context_hash);
-    free(bloc->signature);
-    free(bloc);
+void delete_block(Block_t block) {
+    free(block->predecessor);
+    free(block->operations_hash);
+    free(block->context_hash);
+    free(block->signature);
+    free(block);
 }
 
 
 // --- Printing functions
 
-void print_bloc(Bloc_t bloc) {
-    printf("===== BLOC =====\n");
-    printf("level : %d\n", bloc->level);
+void print_block(Block_t block) {
+    printf("===== BLOCK =====\n");
+    printf("level : %d\n", block->level);
     printf("predecessor : ");
-    print_hex(bloc->predecessor, 32);
-    printf("timestamp : %ld\n", bloc->timestamp); // TODO : format heure
+    print_hex(block->predecessor, 32);
+    printf("timestamp : %ld\n", block->timestamp); // TODO : format heure
     printf("operations hash : ");
-    print_hex(bloc->operations_hash, 32);
+    print_hex(block->operations_hash, 32);
     printf("\ncontext hash : ");
-    print_hex(bloc->context_hash, 32);
+    print_hex(block->context_hash, 32);
     printf("\nsignature : ");
-    print_hex(bloc->signature, 128);
+    print_hex(block->signature, 128);
     printf("\n");
 }
 
@@ -92,7 +109,7 @@ char compare_data(char *d1, size_t s1, char *d2, size_t s2) {
 }
 
 
-Bloc_t encode_to_bloc(char *in) {
+Block_t encode_to_block(char *in) {
 
   
     char *level_temp =  malloc (8 * sizeof (char));
@@ -135,7 +152,7 @@ Bloc_t encode_to_bloc(char *in) {
         }
     }
 
-    return new_bloc(level, predecessor, timestamp, operations_hash, operations_hash, signature);
+    return new_block(level, predecessor, timestamp, operations_hash, operations_hash, signature);
 
 
 }
