@@ -1,5 +1,5 @@
-#ifndef BLOC_H
-#define BLOC_H
+#ifndef BLOCK_H
+#define BLOCK_H
 
 #include "utils.h"
 

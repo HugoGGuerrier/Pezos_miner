@@ -35,7 +35,7 @@ void delete_operation(Operation_t operation) {
 }
 
 
-// --- Operations functions
+// --- Operation list functions
 
 Operations_t new_operations(Operation_t head, Operations_t tail) {
     Operations_t res = (Operations_t) malloc(sizeof(struct operations));
@@ -47,19 +47,19 @@ Operations_t new_operations(Operation_t head, Operations_t tail) {
 void delete_operations(Operations_t operations) {
     if(operations != NULL) {
         delete_operations(operations->tail);
-        free(operations->head);
+        delete_operation(operations->head);
     }
 }
 
 
 // --- Block functions
 
-Block_t new_block(int level, char *pred, long time, char *ope, char *ctx_h, char* sig) {
+Block_t new_block(int level, char *pred, long time, char *ope_h, char *ctx_h, char* sig) {
     Block_t res = (Block_t) malloc(sizeof(struct block));
     res->level = level;
     res->predecessor = pred;
     res->timestamp = time;
-    res->operations_hash = ope;
+    res->operations_hash = ope_h;
     res->context_hash  = ctx_h;
     res->signature = sig;
     return res;
@@ -71,6 +71,59 @@ void delete_block(Block_t block) {
     free(block->context_hash);
     free(block->signature);
     free(block);
+}
+
+
+// --- State functions 
+
+State_t new_state(char *dict_pub_key, unsigned long pred_time, Accounts_t accounts) {
+    State_t res = (State_t) malloc(sizeof(struct state));
+    res->dictator_public_key = dict_pub_key;
+    res->predecessor_timestamp = pred_time;
+    res->accounts = accounts;
+    return res;
+}
+
+void delete_state(State_t state) {
+    free(state->dictator_public_key);
+    delete_accounts(state->accounts);
+    free(state);
+}
+
+
+// --- Account functions 
+
+Account_t new_account(char *user_pub_key, unsigned int lev_pez, unsigned int time_pez, unsigned int op_h_pez, unsigned int ctx_h_pez, unsigned int sig_pez) {
+    Account_t res = (Account_t) malloc(sizeof(struct account));
+    res->user_public_key = user_pub_key;
+    res->level_pez = lev_pez;
+    res->timestamp_pez = time_pez;
+    res->operations_hash_pez = op_h_pez;
+    res->context_hash_pez = ctx_h_pez;
+    res->signature_pez = sig_pez;
+    return res;
+}
+
+void delete_account(Account_t account) {
+    free(account->user_public_key);
+    free(account);
+}
+
+
+// --- Account list functions
+
+Accounts_t new_accounts(Account_t head, Accounts_t tail) {
+    Accounts_t res = (Accounts_t) malloc(sizeof(struct accounts));
+    res->head = head;
+    res->tail = tail;
+    return res;
+}
+
+void delete_accounts(Accounts_t accounts) {
+    if(accounts != NULL) {
+        delete_accounts(accounts->tail);
+        delete_account(accounts->head);
+    }
 }
 
 

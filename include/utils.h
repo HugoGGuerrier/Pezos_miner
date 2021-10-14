@@ -80,7 +80,9 @@ struct block {
 typedef struct state *State_t;
 
 struct state {
-
+    char *dictator_public_key;
+    unsigned long predecessor_timestamp;
+    Accounts_t accounts;
 };
 
 
@@ -88,7 +90,12 @@ struct state {
 typedef struct account *Account_t;
 
 struct account {
-
+    char *user_public_key;
+    unsigned int level_pez;
+    unsigned int timestamp_pez;
+    unsigned int operations_hash_pez;
+    unsigned int context_hash_pez;
+    unsigned int signature_pez;
 };
 
 
@@ -96,7 +103,8 @@ struct account {
 typedef struct accounts *Accounts_t;
 
 struct accounts {
-
+    Account_t head;
+    Accounts_t tail;
 };
 
 
@@ -117,17 +125,35 @@ Operation_t new_operation(Operation_Type_t op_type, char *data);
 // Delete an operation
 void delete_operation(Operation_t operation);
 
-// Create a new operaitons list
+// Create a new operaiton list
 Operations_t new_operations(Operation_t head, Operations_t tail);
 
-// Delete recursively an operations list
+// Delete recursively an operation list
 void delete_operations(Operations_t operations);
 
 // Create a new block from the given data
-Block_t new_block(int l, char * pred, long t, char* ope, char* c, char*s);
+Block_t new_block(int level, char *pred, long time, char *ope_h, char *ctx_h, char* sig);
 
 // Delete a block
 void delete_block(Block_t block);
+
+// Create a new state from the given data
+State_t new_state(char *dict_pub_key, unsigned long pred_time, Accounts_t accounts);
+
+// Delete a state
+void delete_state(State_t state);
+
+// Create a new account with the given data
+Account_t new_account(char *user_pub_key, unsigned int lev_pez, unsigned int time_pez, unsigned int op_h_pez, unsigned int ctx_h_pez, unsigned int sig_pez);
+
+// Delete an account
+void delete_account(Account_t account);
+
+// Create a new accout list
+Accounts_t new_accounts(Account_t head, Accounts_t tail);
+
+// Delete recursivly an account list
+void delete_accounts(Accounts_t accounts);
 
 
 // --- Printing functions
