@@ -76,16 +76,6 @@ struct block {
 };
 
 
-// --- Type that represents a state
-typedef struct state *State_t;
-
-struct state {
-    char *dictator_public_key;
-    unsigned long predecessor_timestamp;
-    Accounts_t accounts;
-};
-
-
 // --- Type that represents an account
 typedef struct account *Account_t;
 
@@ -108,19 +98,29 @@ struct accounts {
 };
 
 
+// --- Type that represents a state
+typedef struct state *State_t;
+
+struct state {
+    char *dictator_public_key;
+    unsigned long predecessor_timestamp;
+    Accounts_t accounts;
+};
+
+
 // ----- Utils function definitions -----
 
 
 // --- Data creation and deletion functions
 
 // Create a new message
-Message_t new_message(Message_Type_t tag, char *data);
+Message_t new_message(Message_Type_t tag, unsigned short data_size, char *data);
 
 // Delete a message
 void delete_message(Message_t message);
 
 // Create a new operation
-Operation_t new_operation(Operation_Type_t op_type, char *data);
+Operation_t new_operation(Operation_Type_t op_type, unsigned short data_size, char *data);
 
 // Delete an operation
 void delete_operation(Operation_t operation);
@@ -168,12 +168,21 @@ void print_block(Block_t block);
 void print_message(Message_t message);
 
 // Print a data in hexadecimal form
-void print_hex(char *thing, size_t size);
+void print_hex(char *thing, size_t size, const char *end);
 
 
 // --- Miscallenous functions
 
 // Compare two arbitrary data
 char compare_data(char *d1, size_t s1, char *d2, size_t s2);
+
+// Reverse the short endianness
+long reverse_long(long src);
+
+// Reverse the integer endianness
+int reverse_int(int src);
+
+// Reverse the short endianness
+short reverse_short(short src);
 
 #endif

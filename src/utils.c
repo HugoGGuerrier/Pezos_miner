@@ -7,30 +7,36 @@
 
 // --- Message functions 
 
-Message_t new_message(Message_Type_t tag, char *data) {
+Message_t new_message(Message_Type_t tag, unsigned short data_size, char *data) {
     Message_t res = (Message_t) malloc(sizeof(struct message));
     res->tag = tag;
+    res->data_size = data_size;
     res->data = data;
     return res;
 }
 
 void delete_message(Message_t message) {
-    free(message->data);
+    if(message->data != NULL) {
+        free(message->data);
+    }
     free(message);
 }
 
 
 // --- Operation functions
 
-Operation_t new_operation(Operation_Type_t op_type, char *data) {
+Operation_t new_operation(Operation_Type_t op_type, unsigned short data_size, char *data) {
     Operation_t res = (Operation_t) malloc(sizeof(struct operation));
     res->op_type = op_type;
+    res->data_size = data_size;
     res->data = data;
     return res;
 }
 
 void delete_operation(Operation_t operation) {
-    free(operation->data);
+    if(operation->data != NULL) {
+        free(operation->data);
+    }
     free(operation);
 }
 
@@ -133,21 +139,21 @@ void print_block(Block_t block) {
     printf("===== BLOCK =====\n");
     printf("level : %d\n", block->level);
     printf("predecessor : ");
-    print_hex(block->predecessor, 32);
+    print_hex(block->predecessor, 32, "\n");
     printf("timestamp : %ld\n", block->timestamp); // TODO : format heure
     printf("operations hash : ");
-    print_hex(block->operations_hash, 32);
-    printf("\ncontext hash : ");
-    print_hex(block->context_hash, 32);
-    printf("\nsignature : ");
-    print_hex(block->signature, 128);
-    printf("\n");
+    print_hex(block->operations_hash, 32, "\n");
+    printf("context hash : ");
+    print_hex(block->context_hash, 32, "\n");
+    printf("signature : ");
+    print_hex(block->signature, 128, "\n");
 }
 
-void print_hex(char *thing, size_t size) {
+void print_hex(char *thing, size_t size, const char *end) {
     for(size_t i = 0; i < size ; i++) {
-        printf("%02x", thing[i]);
+        printf("%02x", thing[i] & 0xff);
     }
+    printf(end);
 }
 
 
@@ -160,6 +166,19 @@ char compare_data(char *d1, size_t s1, char *d2, size_t s2) {
     }
     return 1;
 }
+
+long reverse_long(long src) {
+    
+}
+
+int reverse_int(int src) {
+    return (src>>24) | (src<<24) | ((src>>8) & 0xff00) | ((src<<8) & 0xff0000);
+}
+
+short reverse_short(short src) {
+    return (src>>8) | (src<<8);
+}
+
 
 
 Block_t encode_to_block(char *in) {
