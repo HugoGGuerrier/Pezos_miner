@@ -82,10 +82,11 @@ void delete_block(Block_t block) {
 
 // --- State functions 
 
-State_t new_state(char *dict_pub_key, unsigned long pred_time, Accounts_t accounts) {
+State_t new_state(char *dict_pub_key, unsigned long pred_time, unsigned long nb_bytes, Accounts_t accounts) {
     State_t res = (State_t) malloc(sizeof(struct state));
     res->dictator_public_key = dict_pub_key;
     res->predecessor_timestamp = pred_time;
+    res->nb_account_bytes = nb_bytes;
     res->accounts = accounts;
     return res;
 }

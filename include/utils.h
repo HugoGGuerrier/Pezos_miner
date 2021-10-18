@@ -139,7 +139,7 @@ Block_t new_block(int level, char *pred, long time, char *ope_h, char *ctx_h, ch
 void delete_block(Block_t block);
 
 // Create a new state from the given data
-State_t new_state(char *dict_pub_key, unsigned long pred_time, Accounts_t accounts);
+State_t new_state(char *dict_pub_key, unsigned long pred_time, unsigned long nb_bytes, Accounts_t accounts);
 
 // Delete a state
 void delete_state(State_t state);
