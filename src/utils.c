@@ -4,7 +4,6 @@
 
 #include "utils.h"
 
-
 // --- Message functions 
 
 Message_t new_message(Message_Type_t tag, unsigned short data_size, char *data) {
@@ -178,61 +177,4 @@ int reverse_int(int src) {
 
 short reverse_short(short src) {
     return (src>>8) | (src<<8);
-}
-
-Block_t decode_block(char *in) {
-
-    int level;
-    char * predecessor = malloc (32);
-    long timestamp = 0;
-    char * operations_hash = malloc (32);
-    char * context_hash = malloc (32);
-    char * signature = malloc (64);
-
-    memcpy(&level, in, 4);
-    in = in + 4; 
-
-    memcpy(predecessor, in, 32);
-    in = in + 32;
-
-    memcpy(&timestamp, in, 8);
-    in = in + 8; 
-
-    memcpy(operations_hash, in,32);
-    in = in + 32;
-
-    memcpy(context_hash, in, 32);
-    in = in + 32;
-
-    memcpy(signature, in, 64);
-
-    return new_block(level, predecessor, timestamp, operations_hash, operations_hash, signature);
-
-
-}
-
-
-
-char * encode_account(Block_t bloc) {
-    char *data_res = malloc(172);
-    char *data_ptr = data_res;
-
-    memcpy(data_ptr, bloc->level, 4);
-    data_ptr = data_ptr + 4;
-
-    memcpy(data_ptr, bloc->predecessor, 32);
-    data_ptr = data_ptr + 32;
-
-    memcpy(data_ptr, bloc->timestamp, 8);
-    data_ptr = data_ptr + 8;
-
-    memcpy(data_ptr, bloc->operations_hash, 32);
-    data_ptr = data_ptr + 32;
-
-    memcpy(data_ptr, bloc->context_hash, 32);
-    data_ptr = data_ptr + 4;
-
-    memcpy(data_ptr, bloc->signature, 64);
-
-    return data_res;
 }
