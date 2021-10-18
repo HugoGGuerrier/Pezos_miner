@@ -2,7 +2,6 @@
 #define OPERATION_H
 
 #define OP_TAG_SIZE 2
-#define SIG_SIZE 64
 
 #include "utils.h"
 
