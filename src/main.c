@@ -11,11 +11,11 @@ int main() {
     const char *address = "78.194.168.67";
     unsigned int port = 1337;
 
-    int s = 0x12345678;
+    long s = 0x1234567890123456;
     char *t = (char *) &s;
-    print_hex(t, 4, "\n");
-    s = reverse_int(s);
-    print_hex(t, 4, "\n");
+    print_hex(t, 8, "\n");
+    s = reverse_long(s);
+    print_hex(t, 8, "\n");
 
     // Start the client
     // return start_client(address, port);
