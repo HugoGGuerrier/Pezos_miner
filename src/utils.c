@@ -38,6 +38,8 @@ void delete_operation(Operation_t operation) {
     if(operation->data != NULL) {
         free(operation->data);
     }
+    free(operation->user_key);
+    free(operation->signature);
     free(operation);
 }
 

@@ -3,36 +3,31 @@
 #include <string.h>
 
 #include "operation.h"
+#include "hash.h"
+#include "signature.h"
 
+// ----- Internal functions -----
 
-char *encode_operation(Operation_t operation) {
-    // Prepare the result
-    char *res = (char *) malloc(OP_TAG_SIZE + operation->data_size + KEY_SIZE + SIG_SIZE);
-    char *ptr = res;
-
-    // Prepare the operation type
-    unsigned short tag;
-
-    // Switch the operation type
-    switch (operation->op_type) {
+unsigned short type_to_tag(Operation_Type_t op_type) {
+    switch (op_type) {
     case BAD_PREDECESSOR:
-        tag = reverse_short(1);
+        return reverse_short(1);
         break;
 
     case BAD_TIMESTAMP:
-        tag = reverse_short(2);
+        return reverse_short(2);
         break;
 
     case BAD_OPERATIONS_HASH:
-        tag = reverse_short(3);
+       return reverse_short(3);
         break;
 
     case BAD_CONTEXT_HASH:
-        tag = reverse_short(4);
+        return reverse_short(4);
         break;
 
     case BAD_SIGNATURE:
-        tag = reverse_short(5);
+        return reverse_short(5);
         break;
     
     default:
@@ -40,6 +35,95 @@ char *encode_operation(Operation_t operation) {
         exit(1);
         break;
     }
+}
+
+Operation_Type_t tag_to_type(unsigned short tag) {
+    switch (tag) {
+    case 1:
+        return BAD_PREDECESSOR;
+        break;
+
+    case 2:
+        return BAD_TIMESTAMP;
+        break;
+
+    case 3:
+        return BAD_OPERATIONS_HASH;
+
+    case 4:
+        return BAD_CONTEXT_HASH;
+
+    case 5:
+        return BAD_SIGNATURE;
+    
+    default:
+        printf("Error in operation decoding : Unknown operation tag\n");
+        exit(1);
+        break;
+    }
+}
+
+
+
+
+// ----- Operation specific creation functions ------
+
+Operation_t new_bad_predecessor(char *pred_hash) {
+    // Prepare the data to hash
+    size_t to_hash_size = OP_TAG_SIZE + HASH_SIZE + KEY_SIZE;
+    char to_hash[OP_TAG_SIZE + HASH_SIZE + KEY_SIZE];
+    char *ptr = to_hash;
+
+    // Get the tag
+    unsigned short tag = type_to_tag(BAD_PREDECESSOR);
+
+    memcpy(ptr, &tag, OP_TAG_SIZE);
+    ptr += OP_TAG_SIZE;
+
+    memcpy(ptr, pred_hash, HASH_SIZE);
+    ptr += HASH_SIZE;
+
+    char *public_key = (char *) malloc(KEY_SIZE);
+    memcpy(ptr, public_key, KEY_SIZE);
+
+    // Get the hash
+    char to_sign[HASH_SIZE];
+    hash(to_hash, to_hash_size, to_sign);
+
+    // Get the signature
+    char *signature = (char *) malloc(SIG_SIZE);
+    sign(signature, to_sign, HASH_SIZE);
+
+    // Return the result
+    return new_operation(BAD_PREDECESSOR, HASH_SIZE, pred_hash, public_key, signature);
+}
+
+Operation_t new_bad_timestamp(unsigned long timestamp) {
+
+}
+
+Operation_t new_bad_operations(char *op_hash) {
+
+}
+
+Operation_t new_bad_context(char *ctx_hash) {
+
+}
+
+Operation_t new_bad_signature() {
+
+}
+
+
+// ----- Operations encoding and decoding functions -----
+
+char *encode_operation(Operation_t operation) {
+    // Prepare the result
+    char *res = (char *) malloc(OP_TAG_SIZE + operation->data_size + KEY_SIZE + SIG_SIZE);
+    char *ptr = res;
+
+    // Prepare the operation type
+    unsigned short tag = type_to_tag(operation->op_type);
 
     // Copy the tag in the operation
     memcpy(ptr, &tag, OP_TAG_SIZE);
@@ -67,30 +151,30 @@ Operation_t decode_operation(char *data) {
 
     // Prepare the data size
     unsigned short data_size;
-    Operation_Type_t tag;
+    Operation_Type_t op_type;
 
     // Switch on the tag
     switch (tag) {
     case 1:
-        tag = BAD_PREDECESSOR;
+        op_type = BAD_PREDECESSOR;
         data_size = 32;
         break;
 
     case 2:
-        tag = BAD_TIMESTAMP;
+        op_type = BAD_TIMESTAMP;
         data_size = 8;
         break;
 
     case 3:
-        tag = BAD_OPERATIONS_HASH;
+        op_type = BAD_OPERATIONS_HASH;
         data_size = 32;
 
     case 4:
-        tag = BAD_CONTEXT_HASH;
+        op_type = BAD_CONTEXT_HASH;
         data_size = 32;
 
     case 5:
-        tag = BAD_SIGNATURE;
+        op_type = BAD_SIGNATURE;
         data_size = 0;
     
     default:
@@ -115,7 +199,7 @@ Operation_t decode_operation(char *data) {
     data += SIG_SIZE;
 
     // Return the new operation
-    return new_operation(tag, data_size, op_data, op_key, op_sig);
+    return new_operation(op_type, data_size, op_data, op_key, op_sig);
 }
 
 Operations_t decode_operations(char *data, size_t size) {

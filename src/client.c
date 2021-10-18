@@ -13,7 +13,6 @@
 // --- Constant definition
 
 #define RAND_SEED_SIZE 24
-#define HASH_SIZE 32
 
 // --- Function declaration
 

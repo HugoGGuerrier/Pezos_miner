@@ -43,7 +43,7 @@ Message_t new_get_state_message(unsigned int level) {
 
 Message_t new_inject_operation_message(Operation_t operation) {
     char *data = encode_operation(operation);
-    return new_message(INJECT_OPERATION, operation->data_size + 2 + 32 + 64, data);
+    return new_message(INJECT_OPERATION, operation->data_size + OP_TAG_SIZE + KEY_SIZE + SIG_SIZE, data);
 }
 
 
@@ -58,11 +58,11 @@ Block_t get_block(Message_t message) {
 }
 
 Operations_t get_operations(Message_t message) {
-    Operations_t res = NULL;
+    return decode_operations(message->data, (size_t) message->data_size);
 }
 
 State_t get_state(Message_t message) {
-
+    return decode_state(message->data);
 }
 
 
