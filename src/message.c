@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "message.h"
+#include "operation.h"
 
 
 // ----- Message specific creation functions -----
@@ -12,6 +13,7 @@ Message_t new_get_current_head_message() {
 }
 
 Message_t new_get_block_message(unsigned int level) {
+    level = reverse_int(level);
     char *data = (char *) malloc(4);
     memcpy(data, &level, 4);
 
@@ -20,15 +22,26 @@ Message_t new_get_block_message(unsigned int level) {
 }
 
 Message_t new_get_block_operations_message(unsigned int level) {
-    
+    level = reverse_int(level);
+    char *data = (char *) malloc(4);
+    memcpy(data, &level, 4);
+
+    Message_t res = new_message(GET_BLOCK_OPERATIONS, 4, data);
+    return res;
 }
 
-Message_t new_get_state_message(int level) {
+Message_t new_get_state_message(unsigned int level) {
+    level = reverse_int(level);
+    char *data = (char *) malloc(4);
+    memcpy(data, &level, 4);
 
+    Message_t res = new_message(GET_BLOCK_STATE, 4, data);
+    return res;
 }
 
 Message_t new_inject_operation_message(Operation_t operation) {
-
+    char *data = encode_operation(operation);
+    return new_message(INJECT_OPERATION, operation->data_size + 32 + 64, data);
 }
 
 

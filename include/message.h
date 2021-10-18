@@ -16,7 +16,7 @@ Message_t new_get_block_message(unsigned int level);
 Message_t new_get_block_operations_message(unsigned int level);
 
 // Create a GET STATE message
-Message_t new_get_state_message(int level);
+Message_t new_get_state_message(unsigned int level);
 
 // Create an INJECT OPERATION message
 Message_t new_inject_operation_message(Operation_t operation);
