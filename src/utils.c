@@ -24,11 +24,13 @@ void delete_message(Message_t message) {
 
 // --- Operation functions
 
-Operation_t new_operation(Operation_Type_t op_type, unsigned short data_size, char *data) {
+Operation_t new_operation(Operation_Type_t op_type, unsigned short data_size, char *data, char *user_key, char *sig) {
     Operation_t res = (Operation_t) malloc(sizeof(struct operation));
     res->op_type = op_type;
     res->data_size = data_size;
     res->data = data;
+    res->user_key = user_key;
+    res->signature = sig;
     return res;
 }
 

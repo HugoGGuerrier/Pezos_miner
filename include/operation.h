@@ -1,7 +1,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-#define TAG_SIZE 2
+#define OP_TAG_SIZE 2
 #define SIG_SIZE 64
 
 #include "utils.h"
