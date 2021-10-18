@@ -14,6 +14,6 @@ void sign(char *signature, const char *data, size_t data_size) {
     ed25519_sign((unsigned char *)signature, (const unsigned char *)data, data_size, &public_key[0], &private_key[0]);
 }
 
-void verify(const char *signature, const char *data, size_t data_size, const char *key) {
-    ed25519_verify((const unsigned char *)signature, (const unsigned char *)data, data_size, (const unsigned char *)key);
+int verify(const char *signature, const char *data, size_t data_size, const char *key) {
+    return ed25519_verify((const unsigned char *)signature, (const unsigned char *)data, data_size, (const unsigned char *)key);
 }
