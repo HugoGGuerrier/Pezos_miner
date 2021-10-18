@@ -182,8 +182,14 @@ short reverse_short(short src) {
 
 
 Block_t encode_to_block(char *in) {
+    // déclaration dans utils.h !! 
+    // hésite pas à mettre des commentaires :) bon courage
+    int level;
+    memcpy(&level, in, 4); // va stocker dans level ce qu'il y a dans in[0:4]
 
-  
+    char * predecessor = malloc (32 * sizeof (char));
+    memcpy(predecessor, in+4, 32);
+
     char *level_temp =  malloc (8 * sizeof (char));
     char *predecessor =  malloc (64 * sizeof (char));
     char *timestamp_temp =   malloc (16 * sizeof (char));
