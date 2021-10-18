@@ -63,55 +63,94 @@ Operation_Type_t tag_to_type(unsigned short tag) {
     }
 }
 
-
-
-
-// ----- Operation specific creation functions ------
-
-Operation_t new_bad_predecessor(char *pred_hash) {
-    // Prepare the data to hash
-    size_t to_hash_size = OP_TAG_SIZE + HASH_SIZE + KEY_SIZE;
-    char to_hash[OP_TAG_SIZE + HASH_SIZE + KEY_SIZE];
+void sign_operation(Operation_t op) {
+    // Prepare the byte array to hash
+    size_t to_hash_size = OP_TAG_SIZE + op->data_size + KEY_SIZE;
+    char *to_hash = (char *) malloc(to_hash_size);
     char *ptr = to_hash;
 
-    // Get the tag
-    unsigned short tag = type_to_tag(BAD_PREDECESSOR);
-
+    // Add the tag
+    unsigned short tag = type_to_tag(op->op_type);
     memcpy(ptr, &tag, OP_TAG_SIZE);
     ptr += OP_TAG_SIZE;
 
-    memcpy(ptr, pred_hash, HASH_SIZE);
-    ptr += HASH_SIZE;
+    // Add the operation data
+    memcpy(ptr, op->data, op->data_size);
+    ptr += op->data_size;
 
-    char *public_key = (char *) malloc(KEY_SIZE);
-    memcpy(ptr, public_key, KEY_SIZE);
+    // Add our public key
+    memcpy(ptr, op->user_key, KEY_SIZE);
 
-    // Get the hash
+    // Hash the result
     char to_sign[HASH_SIZE];
     hash(to_hash, to_hash_size, to_sign);
+
+    // Free the to hash array
+    free(to_hash);
 
     // Get the signature
     char *signature = (char *) malloc(SIG_SIZE);
     sign(signature, to_sign, HASH_SIZE);
 
-    // Return the result
-    return new_operation(BAD_PREDECESSOR, HASH_SIZE, pred_hash, public_key, signature);
+    // Put it in the operation
+    op->signature = signature;
+}
+
+// ----- Operation specific creation functions ------
+
+Operation_t new_bad_predecessor(char *pred_hash) {
+    // Create a public key copy
+    char *public_key = get_public_key_copy();
+
+    // Create the operation, sign it and send it
+    Operation_t res = new_operation(BAD_PREDECESSOR, HASH_SIZE, pred_hash, public_key, NULL);
+    sign_operation(res);
+    return res;
 }
 
 Operation_t new_bad_timestamp(unsigned long timestamp) {
+    // Create a public key copy
+    char *public_key = get_public_key_copy();
 
+    // Create the timestamp
+    timestamp = reverse_long(timestamp);
+    char *data = (char *) malloc(sizeof(unsigned long));
+    memcpy(data, &timestamp, sizeof(unsigned long));
+
+    // Create the operation, sign it and send it
+    Operation_t res = new_operation(BAD_TIMESTAMP, sizeof(unsigned long), data, public_key, NULL);
+    sign_operation(res);
+    return res;
 }
 
 Operation_t new_bad_operations(char *op_hash) {
+    // Create a public key copy
+    char *public_key = get_public_key_copy();
 
+    // Create the operation, sign it and send it
+    Operation_t res = new_operation(BAD_OPERATIONS_HASH, HASH_SIZE, op_hash, public_key, NULL);
+    sign_operation(res);
+    return res;
 }
 
 Operation_t new_bad_context(char *ctx_hash) {
+    // Create a public key copy
+    char *public_key = get_public_key_copy();
 
+    // Create the operation, sign it and send it
+    Operation_t res = new_operation(BAD_CONTEXT_HASH, HASH_SIZE, ctx_hash, public_key, NULL);
+    sign_operation(res);
+    return res;
 }
 
 Operation_t new_bad_signature() {
+    // Create a public key copy
+    char *public_key = get_public_key_copy();
 
+    // Create the operation, sign it and send it
+    Operation_t res = new_operation(BAD_SIGNATURE, 0, NULL, public_key, NULL);
+    sign_operation(res);
+    return res;
 }
 
 
