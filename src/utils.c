@@ -210,3 +210,29 @@ Block_t decode_block(char *in) {
 
 
 }
+
+
+
+char * encode_account(Block_t bloc) {
+    char *data_res = malloc(172);
+    char *data_ptr = data_res;
+
+    memcpy(data_ptr, bloc->level, 4);
+    data_ptr = data_ptr + 4;
+
+    memcpy(data_ptr, bloc->predecessor, 32);
+    data_ptr = data_ptr + 32;
+
+    memcpy(data_ptr, bloc->timestamp, 8);
+    data_ptr = data_ptr + 8;
+
+    memcpy(data_ptr, bloc->operations_hash, 32);
+    data_ptr = data_ptr + 32;
+
+    memcpy(data_ptr, bloc->context_hash, 32);
+    data_ptr = data_ptr + 4;
+
+    memcpy(data_ptr, bloc->signature, 64);
+
+    return data_res;
+}

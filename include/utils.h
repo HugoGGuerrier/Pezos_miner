@@ -187,5 +187,5 @@ int reverse_int(int src);
 short reverse_short(short src);
 
 Block_t decode_block(char *in);
-
+char * encode_account(Block_t bloc);
 #endif
