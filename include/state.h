@@ -3,7 +3,7 @@
 
 #include "utils.h"
 
-// Take a state and encode it in a byte sequence
+// Take a state and encode it as a byte sequence
 char * encode_state(State_t state);
 
 // Take a byte sequence and decode it as a state

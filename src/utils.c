@@ -180,16 +180,14 @@ short reverse_short(short src) {
     return (src>>8) | (src<<8);
 }
 
-
-
-Block_t encode_to_block(char *in) {
+Block_t decode_block(char *in) {
 
     int level;
     char * predecessor = malloc (32);
-    char * timestamp_temp =   malloc (8);
-    char * operations_hash =  malloc (32);
-    char * context_hash =  malloc (32);
-    char * signature =  malloc (64);
+    long timestamp = 0;
+    char * operations_hash = malloc (32);
+    char * context_hash = malloc (32);
+    char * signature = malloc (64);
 
     memcpy(&level, in, 4);
     in = in + 4; 
@@ -197,15 +195,16 @@ Block_t encode_to_block(char *in) {
     memcpy(predecessor, in, 32);
     in = in + 32;
 
-    memcpy(timestamp_temp, in, 8);
-    in = in + 8;
+    memcpy(&timestamp, in, 8);
+    in = in + 8; 
+
+    memcpy(operations_hash, in,32);
+    in = in + 32;
 
     memcpy(context_hash, in, 32);
     in = in + 32;
 
     memcpy(signature, in, 64);
-    char *eptr;
-    long timestamp = strtol(timestamp_temp, &eptr, 10);
 
     return new_block(level, predecessor, timestamp, operations_hash, operations_hash, signature);
 
