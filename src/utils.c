@@ -200,3 +200,11 @@ char *read_hex_string(char *hex_str) {
     // Return the result
     return res; 
 }
+
+char *get_public_key_copy() {
+    char *res = (char *) malloc(KEY_SIZE);
+    char pk[KEY_SIZE] = PUBLIC_KEY;
+    memcpy(res, pk, KEY_SIZE);
+
+    return res;
+}
