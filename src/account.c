@@ -3,20 +3,27 @@
 #include "account.h"
 
 char * encode_account(Account_t account) {
-    char * data = malloc(ACCOUNT_CODE_SIZE);
+    char *data_res = malloc(ACCOUNT_CODE_SIZE);
+    char *data_ptr = data_res;
 
-    memcpy(data, account->user_public_key, 32);
-    data = data + 32;
+    memcpy(data_ptr, account->user_public_key, 32);
+    data_ptr = data_ptr + 32;
 
-    memcpy(data, account->level_pez, 4);
-    data = data + 4;
+    memcpy(data_ptr, account->level_pez, 4);
+    data_ptr = data_ptr + 4;
 
-    account->timestamp_pez;
-    account->operations_hash_pez;
-    account->context_hash_pez;
-    account->signature_pez;
+    memcpy(data_ptr, account->timestamp_pez, 4);
+    data_ptr = data_ptr + 4;
 
-    return data;
+    memcpy(data_ptr, account->operations_hash_pez, 4);
+    data_ptr = data_ptr + 4;
+
+    memcpy(data_ptr, account->context_hash_pez, 4);
+    data_ptr = data_ptr + 4;
+
+    memcpy(data_ptr, account->signature_pez, 4);
+
+    return data_res;
 }
 
 Account_t decode_account(char *data) {
