@@ -1,7 +1,11 @@
+#include <stdlib.h>
+
 #include "state.h"
 
 char *encode_state(State_t state) {
-    // TODO
+    
+
+
     return NULL;
 }
 
