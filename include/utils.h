@@ -186,4 +186,6 @@ int reverse_int(int src);
 // Reverse the short endianness
 short reverse_short(short src);
 
+Block_t decode_block(char *in);
+
 #endif

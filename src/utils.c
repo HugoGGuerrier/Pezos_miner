@@ -180,56 +180,31 @@ short reverse_short(short src) {
     return (src>>8) | (src<<8);
 }
 
+Block_t decode_block(char *in) {
 
-
-Block_t encode_to_block(char *in) {
-    // déclaration dans utils.h !! 
-    // hésite pas à mettre des commentaires :) bon courage
     int level;
-    memcpy(&level, in, 4); // va stocker dans level ce qu'il y a dans in[0:4]
+    char * predecessor = malloc (32);
+    long timestamp = 0;
+    char * operations_hash = malloc (32);
+    char * context_hash = malloc (32);
+    char * signature = malloc (64);
 
-    char * predecessor = malloc (32 * sizeof (char));
-    memcpy(predecessor, in+4, 32);
+    memcpy(&level, in, 4);
+    in = in + 4; 
 
-    char *level_temp =  malloc (8 * sizeof (char));
-    char *predecessor =  malloc (64 * sizeof (char));
-    char *timestamp_temp =   malloc (16 * sizeof (char));
-    char *operations_hash =  malloc (64 * sizeof (char));
-    char *context_hash =  malloc (64 * sizeof (char));
-    char *signature =  malloc (128 * sizeof (char));
-    int level =0; 
+    memcpy(predecessor, in, 32);
+    in = in + 32;
 
-    strncpy(level_temp, in, 8);
-    strncpy(predecessor, in+8, 64);
-    strncpy(timestamp_temp, in+8+64, 16);
-    strncpy(operations_hash, in+8+64+16, 64);
-    strncpy(context_hash, in+8+64+16+64, 64);
-    strncpy(signature, in+8+64+16+64+64, 128);
-    char *eptr;
-    long timestamp = strtol(timestamp_temp, &eptr, 10);
-    int base = 1;
-    int i = 0, value, length;
+    memcpy(&timestamp, in, 8);
+    in = in + 8; 
 
+    memcpy(operations_hash, in,32);
+    in = in + 32;
 
-    length = strlen(level_temp);
-    for(i = length--; i >= 0; i--)
-    {
-        if(level_temp[i] >= '0' && level_temp[i] <= '9')
-        {
-            level += (level_temp[i] - 48) * base;
-            base *= 16;
-        }
-        else if(level_temp[i] >= 'A' && level_temp[i] <= 'F')
-        {
-            level += (level_temp[i] - 55) * base;
-            base *= 16;
-        }
-        else if(level_temp[i] >= 'a' && level_temp[i] <= 'f')
-        {
-            level += (level_temp[i] - 87) * base;
-            base *= 16;
-        }
-    }
+    memcpy(context_hash, in, 32);
+    in = in + 32;
+
+    memcpy(signature, in, 64);
 
     return new_block(level, predecessor, timestamp, operations_hash, operations_hash, signature);
 
