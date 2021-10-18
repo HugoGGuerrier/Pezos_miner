@@ -51,6 +51,8 @@ struct operation {
     Operation_Type_t op_type;
     unsigned short data_size;
     char *data;
+    char *user_key;
+    char *signature;
 };
 
 
@@ -121,7 +123,7 @@ Message_t new_message(Message_Type_t tag, unsigned short data_size, char *data);
 void delete_message(Message_t message);
 
 // Create a new operation
-Operation_t new_operation(Operation_Type_t op_type, unsigned short data_size, char *data);
+Operation_t new_operation(Operation_Type_t op_type, unsigned short data_size, char *data, char *user_key, char *sig);
 
 // Delete an operation
 void delete_operation(Operation_t operation);

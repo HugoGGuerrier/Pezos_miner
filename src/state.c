@@ -9,16 +9,13 @@ char *encode_state(State_t state) {
 }
 
 State_t decode_state(char *data) {
-
     // Declarations and allocations
-
     char *dictator_public_key = malloc(32);
     unsigned long predecessor_timestamp;
     unsigned int nb_accounts;
     Accounts_t accounts = NULL;
 
     // Memory copy
-
     memcpy(dictator_public_key, data, 32);
     data = data + 32;
 
