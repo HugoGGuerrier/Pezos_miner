@@ -190,4 +190,7 @@ int reverse_int(int src);
 // Reverse the short endianness
 short reverse_short(short src);
 
+// Get a copy of the public key
+char *get_public_key_copy();
+
 #endif

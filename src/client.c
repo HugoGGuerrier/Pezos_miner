@@ -100,7 +100,7 @@ int auth() {
     }
 
     if(test_connection() != 0) {
-        printf("Error in authentification : Server didn't acceot the connection\n");
+        printf("Error in authentification : Server didn't accept the connection\n");
         return 1;
     }
 
