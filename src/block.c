@@ -3,7 +3,7 @@
 #include "block.h"
 
 
-char *encode_bloc(Block_t block) {
+char *encode_block(Block_t block) {
     // Prepare the result encoded data
     char *data_res = malloc(BLOCK_CODE_SIZE);
 
@@ -67,7 +67,7 @@ Block_t decode_block(char *data) {
     return new_block(level, predecessor, timestamp, operations_hash, operations_hash, signature);
 }
 
-char *verify_bloc(Block_t block) {
+char *verify_block(Block_t block) {
     //TODO
     return NULL;
 }

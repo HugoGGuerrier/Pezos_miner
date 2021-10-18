@@ -140,7 +140,7 @@ void delete_accounts(Accounts_t accounts) {
 // --- Printing functions
 
 void print_block(Block_t block) {
-    printf("===== BLOCK =====\n");
+    printf("=== BLOCK ===\n");
     printf("level : %d\n", block->level);
     printf("predecessor : ");
     print_hex(block->predecessor, 32, "\n");
@@ -181,4 +181,22 @@ int reverse_int(int src) {
 
 short reverse_short(short src) {
     return (src>>8) | (src<<8);
+}
+
+char *read_hex_string(char *hex_str) {
+    int hex_str_len = strlen(hex_str);
+    int pos = hex_str;
+
+    // One byte is represented by two hexadecimal chars
+    char *res = malloc(hex_str_len/2);
+    char tmp[2];
+    
+    // Iterate pairs on the hexa string
+    for (int i = 0 ; i < sizeof res ; i++) {
+        sscanf(pos, "%2hhx", &res[i]);
+        pos += 2;
+    }
+    
+    // Return the result
+    return res; 
 }

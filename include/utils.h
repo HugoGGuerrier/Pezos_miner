@@ -190,4 +190,7 @@ int reverse_int(int src);
 // Reverse the short endianness
 short reverse_short(short src);
 
+// Read bytes from an hexadecimal string
+char *read_hex_string(char *hex_str);
+
 #endif
