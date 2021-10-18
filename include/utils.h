@@ -104,6 +104,7 @@ typedef struct state *State_t;
 struct state {
     char *dictator_public_key;
     unsigned long predecessor_timestamp;
+    unsigned int nb_account_bytes;
     Accounts_t accounts;
 };
 
