@@ -3,6 +3,7 @@
 
 #include "utils.h"
 
+#define BLOCK_CODE_SIZE (64 + 32*3 + 8 + 4)
 
 // Encode a block to a binary
 char *encode_block(Block_t block);

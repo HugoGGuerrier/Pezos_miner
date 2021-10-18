@@ -35,6 +35,19 @@ typedef enum {
 } Operation_Type_t;
 
 
+// --- Type that represents a block
+typedef struct block *Block_t;
+
+struct block {
+    int level;
+    char *predecessor;
+    long timestamp; 
+    char *operations_hash;
+    char *context_hash;
+    char *signature;
+};
+
+
 // --- Type that represents a message
 typedef struct message *Message_t;
 
@@ -63,19 +76,6 @@ typedef struct operations *Operations_t;
 struct operations {
     Operation_t head;
     Operations_t tail;
-};
-
-
-// --- Type that represents a block
-typedef struct block *Block_t;
-
-struct block {
-    int level;
-    char *predecessor;
-    long timestamp; 
-    char *operations_hash;
-    char *context_hash;
-    char *signature;
 };
 
 
@@ -189,6 +189,4 @@ int reverse_int(int src);
 // Reverse the short endianness
 short reverse_short(short src);
 
-Block_t decode_block(char *in);
-char * encode_account(Block_t bloc);
 #endif
