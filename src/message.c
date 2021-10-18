@@ -3,6 +3,8 @@
 
 #include "message.h"
 #include "operation.h"
+#include "block.h"
+#include "state.h"
 
 
 // ----- Message specific creation functions -----
@@ -41,22 +43,22 @@ Message_t new_get_state_message(unsigned int level) {
 
 Message_t new_inject_operation_message(Operation_t operation) {
     char *data = encode_operation(operation);
-    return new_message(INJECT_OPERATION, operation->data_size + 32 + 64, data);
+    return new_message(INJECT_OPERATION, operation->data_size + 2 + 32 + 64, data);
 }
 
 
 // ----- Message information getting function -----
 
 Block_t get_current_head(Message_t message) {
-
+    return decode_block(message->data);
 }
 
 Block_t get_block(Message_t message) {
-
+    return decode_block(message->data);
 }
 
 Operations_t get_operations(Message_t message) {
-
+    Operations_t res = NULL;
 }
 
 State_t get_state(Message_t message) {

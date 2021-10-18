@@ -92,8 +92,9 @@ int auth() {
     // Send the signed hash value of the random seed
     char rand_hash[HASH_SIZE];
     hash(rand_seed, RAND_SEED_SIZE, rand_hash);
-    char rand_hash_sign[64];
-    sign(rand_hash_sign, rand_hash, HASH_SIZE);
+    char rand_hash_sign[64 + 2];
+    rand_hash_sign[1] = 64;
+    sign(rand_hash_sign[2], rand_hash, HASH_SIZE);
     if(write(sock_id, rand_hash_sign, 64) == -1) {
         printf("Error in authentification : Cannot send the random seed hash signature to the server\n");
         return 1;
@@ -127,4 +128,9 @@ int handle_message() {
 int send_message(Message_t message) {
     // TODO : Encode the message and send it to the server
     return 0;
+}
+
+Message_t send_message_with_response(Message_t message) {
+    // TODO
+    return NULL;
 }
