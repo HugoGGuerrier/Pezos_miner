@@ -1,21 +1,23 @@
 #include <stdlib.h>
 
+#include "client.h"
+#include "message.h"
 #include "utils.h"
 
 unsigned char *ops_hash(Operations_t ops) {
     unsigned char *res_buf = malloc(32);
-    if (ops.head == NULL) {
+    if (ops->head == NULL) {
         for (int i=0; i < 32; i++) {
             res_buf[i] = 0;
         }
     } else {
-        Operation_t op = ops.head;
-        if (ops.tail == NULL) {
-            blake2b((void *) res_buf, 32, (void *) encode_operation(op), (2 + op.data_size), NULL, 0);
+        Operation_t op = ops->head;
+        if (ops->tail == NULL) {
+            blake2b((void *) res_buf, 32, (void *) encode_operation(op), (2 + op->data_size), NULL, 0);
         } else {
-            unsigned char *rest_hash = ops_hash(ops.tail); 
+            unsigned char *rest_hash = ops_hash(ops->tail); 
             unsigned char *head_hash = malloc(32); 
-            blake2b((void *) head_hash, 32, (void *) encode_operation(op), (2 + op.data_size), NULL, 0);
+            blake2b((void *) head_hash, 32, (void *) encode_operation(op), (2 + op->data_size), NULL, 0);
             unsigned char *tmp_buf = malloc(64); 
             for (int i=0; i < 32; i++) {
                 tmp_buf[i] = rest_hash[i];
@@ -33,32 +35,32 @@ unsigned char *ops_hash(Operations_t ops) {
 // TODO: refactor de into multiple verification function ?
 // Can be optimized by verifying signature and not operations (making ops verif last) ?
 int verify(Block_t b) {
-    Block_t pred = get_predecessor(b.level); /* TODO: fonction */
+    Block_t pred = get_block(send_message_with_response(new_get_block_message(b->level - 1))); 
 
     // Vérifier predecessor
     char *pred_datas = encode_block(pred);
     unsigned char *pred_hash_res = malloc(32);
     blake2b((void *) pred_hash_res, 32, (void *) pred_datas, 172, NULL, 0);
-    if (compare_data(b.predecessor, pred_hash_res, 32, 32)) {
+    if (compare_data(b->predecessor, pred_hash_res, 32, 32)) {
         free(pred_hash_res);
 
         // Vérifier timestamp
-        long time = b.timestamp - pred.timestamp;
+        long time = b->timestamp - pred->timestamp;
         if (time >= 600) {
             
             // Vérifier op hash
-            Operations_t ops = get_operations(b.level);
-            unsigned char *ops_hash = ops_hash(ops); //TODO: free
+            Operations_t ops = get_operations(b->level);
+            unsigned char *ops_h = ops_hash(ops); 
 
-            if (compare_data(b.operations_hash, ops_hash, 32, 32)) {
-                free(ops_hash);
+            if (compare_data(b->operations_hash, ops_h, 32, 32)) {
+                free(ops_h);
 
                 // Vérifier state hash
-                State_t state = get_state(); /* TODO: fonction */
+                State_t state = get_state(send_message_with_response(new_get_state_message(b->level)));
                 char *state_datas = encode_state(state);
                 unsigned char *state_hash_res = malloc(32);
-                blake2b((void *) state_hash_res, 32, (void *) state_datas, (44 + state.nb_account_bytes), NULL, 0);
-                if (compare_data(b.context_hash, state_hash_res, 32, 32)) {
+                blake2b((void *) state_hash_res, 32, (void *) state_datas, (44 + state->nb_account_bytes), NULL, 0);
+                if (compare_data(b->context_hash, state_hash_res, 32, 32)) {
                     free(state_hash_res);
 
                     // Vérifier sig
@@ -69,8 +71,8 @@ int verify(Block_t b) {
                     return BAD_CONTEXT_HASH;
                 }
             } else {
-                free(ops_hash);
-                return BAD_OPERTATIONS;
+                free(ops_h);
+                return BAD_OPERATIONS_HASH;
             }
         } else {
             return BAD_TIMESTAMP;
