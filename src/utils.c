@@ -204,8 +204,6 @@ Block_t encode_to_block(char *in) {
     in = in + 32;
 
     memcpy(signature, in, 64);
-    in = in + 32;
-
     char *eptr;
     long timestamp = strtol(timestamp_temp, &eptr, 10);
 
