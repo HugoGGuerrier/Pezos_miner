@@ -1,6 +1,9 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#define MSG_SIZE_SIZE 2
+#define MSG_TAG_SIZE 2
+
 #include "utils.h"
 
 

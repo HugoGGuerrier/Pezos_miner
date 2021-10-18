@@ -33,7 +33,6 @@ unsigned short type_to_tag(Operation_Type_t op_type) {
     default:
         printf("Error in operation encoding : Unknown operation tag\n");
         exit(1);
-        break;
     }
 }
 
@@ -59,7 +58,6 @@ Operation_Type_t tag_to_type(unsigned short tag) {
     default:
         printf("Error in operation decoding : Unknown operation tag\n");
         exit(1);
-        break;
     }
 }
 
