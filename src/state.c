@@ -4,11 +4,16 @@
 #include "account.h"
 
 char *encode_state(State_t state) {
+    // Prepare the result encoded data
     char *data_res = malloc(STATE_CODE_SIZE_MIN + state->nb_account_bytes);
+
+    // Prepare a copy of the address to iterate on
     char *data_ptr = data_res;
 
-    memcpy(data_ptr, state->dictator_public_key, 32);
-    data_ptr = data_ptr + 32;
+    // Copy memory for each block field
+
+    memcpy(data_ptr, state->dictator_public_key, KEY_SIZE);
+    data_ptr = data_ptr + KEY_SIZE;
 
     memcpy(data_ptr, state->predecessor_timestamp, 8);
     data_ptr = data_ptr + 8;
@@ -23,19 +28,23 @@ char *encode_state(State_t state) {
         accounts = accounts->tail;
     }
 
+    // Return the result
     return data_res;
 }
 
 State_t decode_state(char *data) {
+
     // Declarations and allocations
-    char *dictator_public_key = malloc(32);
+
+    char *dictator_public_key = malloc(KEY_SIZE);
     unsigned long predecessor_timestamp;
     unsigned int nb_account_bytes;
     Accounts_t accounts = NULL;
 
     // Memory copy
-    memcpy(dictator_public_key, data, 32);
-    data = data + 32;
+    
+    memcpy(dictator_public_key, data, KEY_SIZE);
+    data = data + KEY_SIZE;
 
     memcpy(&predecessor_timestamp, data, sizeof(unsigned long));
     data = data + sizeof(unsigned long);

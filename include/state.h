@@ -3,7 +3,7 @@
 
 #include "utils.h"
 
-#define STATE_CODE_SIZE_MIN (32 + 8 + 4)
+#define STATE_CODE_SIZE_MIN (KEY_SIZE + 8 + 4)
 
 // Take a state and encode it as a byte sequence (could reverse order of the accounts in the result)
 char * encode_state(State_t state);

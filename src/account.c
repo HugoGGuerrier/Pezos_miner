@@ -3,11 +3,16 @@
 #include "account.h"
 
 char * encode_account(Account_t account) {
+    // Prepare the result encoded data
     char *data_res = malloc(ACCOUNT_CODE_SIZE);
+
+    // Prepare a copy of the address to iterate on
     char *data_ptr = data_res;
 
-    memcpy(data_ptr, account->user_public_key, 32);
-    data_ptr = data_ptr + 32;
+    // Copy memory for each block field
+
+    memcpy(data_ptr, account->user_public_key, KEY_SIZE);
+    data_ptr = data_ptr + KEY_SIZE;
 
     memcpy(data_ptr, account->level_pez, 4);
     data_ptr = data_ptr + 4;
@@ -30,7 +35,7 @@ Account_t decode_account(char *data) {
 
     // Declarations and allocations
 
-    char *user_public_key = malloc(32);
+    char *user_public_key = malloc(KEY_SIZE);
     unsigned int level_pez;
     unsigned int timestamp_pez;
     unsigned int operations_hash_pez;
@@ -39,8 +44,8 @@ Account_t decode_account(char *data) {
 
     // Memory copy
 
-    memcpy(user_public_key, data, 32);
-    data = data + 32;
+    memcpy(user_public_key, data, KEY_SIZE);
+    data = data + KEY_SIZE;
 
     memcpy(&level_pez, data, sizeof(unsigned int));
     data = data + 4;
