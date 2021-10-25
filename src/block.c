@@ -10,29 +10,33 @@
 
 char *encode_block(Block_t block) {
     // Prepare the result encoded data
-    char *data_res = malloc(BLOCK_CODE_SIZE);
+    char *data_res = (char *) malloc(BLOCK_CODE_SIZE);
 
     // Prepare a copy of the address to iterate on
     char *data_ptr = data_res;
 
-    // Copy memory for each block field
+    // Copy the block level
+    memcpy(data_ptr, reverse_int(block->level), 4);
+    data_ptr += 4;
 
-    memcpy(data_ptr, block->level, 4);
-    data_ptr = data_ptr + 4;
+    // Copy the block predecessor hash
+    memcpy(data_ptr, block->predecessor, HASH_SIZE);
+    data_ptr += HASH_SIZE;
 
-    memcpy(data_ptr, block->predecessor, 32);
-    data_ptr = data_ptr + 32;
+    // Copy the block timestamp
+    memcpy(data_ptr, reverse_long(block->timestamp), 8);
+    data_ptr += 8;
 
-    memcpy(data_ptr, block->timestamp, 8);
-    data_ptr = data_ptr + 8;
+    // Copy the block operations hash
+    memcpy(data_ptr, block->operations_hash, HASH_SIZE);
+    data_ptr += HASH_SIZE;
 
-    memcpy(data_ptr, block->operations_hash, 32);
-    data_ptr = data_ptr + 32;
+    // Copy the block context hash
+    memcpy(data_ptr, block->context_hash, HASH_SIZE);
+    data_ptr += HASH_SIZE;
 
-    memcpy(data_ptr, block->context_hash, 32);
-    data_ptr = data_ptr + 4;
-
-    memcpy(data_ptr, block->signature, 64);
+    // Copy the block signature
+    memcpy(data_ptr, block->signature, SIG_SIZE);
 
     // Return the result
     return data_res;
@@ -41,32 +45,37 @@ char *encode_block(Block_t block) {
 Block_t decode_block(char *data) {
 
     // Declarations and allocations
-
     int level;
-    char * predecessor = malloc (32);
+    char *predecessor = (char *) malloc(32);
     long timestamp = 0;
-    char * operations_hash = malloc (32);
-    char * context_hash = malloc (32);
-    char * signature = malloc (64);
+    char *operations_hash = (char *) malloc(32);
+    char *context_hash = (char *) malloc (32);
+    char *signature = (char *) malloc (64);
 
-    // Copy memory for each block field
-
+    // Copy the block level
     memcpy(&level, data, 4);
-    data = data + 4; 
+    level = reverse_int(level);
+    data += 4; 
 
-    memcpy(predecessor, data, 32);
-    data = data + 32;
+    // Copy the block predecessor hash
+    memcpy(predecessor, data, HASH_SIZE);
+    data += HASH_SIZE;
 
+    // Copy the block timestamp
     memcpy(&timestamp, data, 8);
-    data = data + 8; 
+    timestamp = reverse_long(timestamp);
+    data += 8;
 
-    memcpy(operations_hash, data,32);
-    data = data + 32;
+    // Copy the block operations hash
+    memcpy(operations_hash, data, HASH_SIZE);
+    data += HASH_SIZE;
 
-    memcpy(context_hash, data, 32);
-    data = data + 32;
+    // Copy the context hash
+    memcpy(context_hash, data, HASH_SIZE);
+    data += HASH_SIZE;
 
-    memcpy(signature, data, 64);
+    // Copy the signature
+    memcpy(signature, data, SIG_SIZE);
 
     // Build and return the block
     return new_block(level, predecessor, timestamp, operations_hash, operations_hash, signature);
