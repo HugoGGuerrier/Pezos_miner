@@ -170,7 +170,6 @@ void print_block(Block_t block)
 void print_account(Account_t account)
 {
     printf("--- ACCOUNT ---\n");
-
     printf("user public key : ");
     print_hex(account->user_public_key, HASH_SIZE, "\n");
     printf("level_pez : %d\n", account->level_pez);
@@ -180,6 +179,13 @@ void print_account(Account_t account)
     printf("-------------\n");
 }
 
+// Print a message
+void print_message(Message_t message)
+{
+    printf("data_size : %d\n", message->data_size);
+    printf("-------------\n");
+}
+}
 void print_hex(char *thing, size_t size, const char *end)
 {
     for (size_t i = 0; i < size; i++)
