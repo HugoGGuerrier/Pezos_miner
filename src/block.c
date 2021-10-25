@@ -26,8 +26,8 @@ char *encode_block(Block_t block) {
 
     // Copy the block timestamp
     unsigned long real_ts = reverse_long(block->timestamp);
-    memcpy(data_ptr, &real_ts, 8);
-    data_ptr += 8;
+    memcpy(data_ptr, &real_ts, sizeof(long));
+    data_ptr += sizeof(long);
 
     // Copy the block operations hash
     memcpy(data_ptr, block->operations_hash, HASH_SIZE);
