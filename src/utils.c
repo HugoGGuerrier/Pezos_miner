@@ -182,7 +182,12 @@ void print_account(Account_t account)
 // Print a message
 void print_message(Message_t message)
 {
+    printf("--- MESSAGE ---\n");
+    // TODO: faire print enum
     printf("data_size : %d\n", message->data_size);
+    printf("message : ");
+    print_hex(message->data, message->data_size, "\n");
+
     printf("-------------\n");
 }
 }
