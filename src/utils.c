@@ -140,17 +140,18 @@ void delete_accounts(Accounts_t accounts) {
 // --- Printing functions
 
 void print_block(Block_t block) {
-    printf("=== BLOCK ===\n");
+    printf("--- BLOCK ---\n");
     printf("level : %d\n", block->level);
     printf("predecessor : ");
-    print_hex(block->predecessor, 32, "\n");
-    printf("timestamp : %ld\n", block->timestamp); // TODO : format heure
+    print_hex(block->predecessor, HASH_SIZE, "\n");
+    printf("timestamp : %lu\n", block->timestamp); // TODO : format heure
     printf("operations hash : ");
-    print_hex(block->operations_hash, 32, "\n");
+    print_hex(block->operations_hash, HASH_SIZE, "\n");
     printf("context hash : ");
-    print_hex(block->context_hash, 32, "\n");
+    print_hex(block->context_hash, HASH_SIZE, "\n");
     printf("signature : ");
-    print_hex(block->signature, 128, "\n");
+    print_hex(block->signature, SIG_SIZE, "\n");
+    printf("-------------\n");
 }
 
 void print_hex(char *thing, size_t size, const char *end) {
@@ -185,14 +186,13 @@ short reverse_short(short src) {
 
 char *read_hex_string(char *hex_str) {
     int hex_str_len = strlen(hex_str);
-    int pos = hex_str;
+    char *pos = hex_str;
 
     // One byte is represented by two hexadecimal chars
-    char *res = malloc(hex_str_len/2);
-    char tmp[2];
+    char *res = (char *) malloc(hex_str_len/2);
     
     // Iterate pairs on the hexa string
-    for (int i = 0 ; i < sizeof res ; i++) {
+    for (int i = 0 ; i < hex_str_len/2 ; i++) {
         sscanf(pos, "%2hhx", &res[i]);
         pos += 2;
     }

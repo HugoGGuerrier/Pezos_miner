@@ -16,7 +16,8 @@ char *encode_block(Block_t block) {
     char *data_ptr = data_res;
 
     // Copy the block level
-    memcpy(data_ptr, reverse_int(block->level), 4);
+    unsigned int real_lvl = reverse_int(block->level);
+    memcpy(data_ptr, &real_lvl, 4);
     data_ptr += 4;
 
     // Copy the block predecessor hash
@@ -24,7 +25,8 @@ char *encode_block(Block_t block) {
     data_ptr += HASH_SIZE;
 
     // Copy the block timestamp
-    memcpy(data_ptr, reverse_long(block->timestamp), 8);
+    unsigned long real_ts = reverse_long(block->timestamp);
+    memcpy(data_ptr, &real_ts, 8);
     data_ptr += 8;
 
     // Copy the block operations hash
