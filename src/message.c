@@ -110,32 +110,32 @@ Message_t new_get_block_message(unsigned int level) {
     // Prepare the data
     level = reverse_int(level);
     char *data = (char *) malloc(4);
-    memcpy(data, &level, 4);
+    memcpy(data, &level, sizeof(int));
 
     // Craft the message and return it
-    Message_t res = new_message(GET_BLOCK, 4, data);
+    Message_t res = new_message(GET_BLOCK, sizeof(int), data);
     return res;
 }
 
 Message_t new_get_block_operations_message(unsigned int level) {
     // Prepare the data
     level = reverse_int(level);
-    char *data = (char *) malloc(4);
-    memcpy(data, &level, 4);
+    char *data = (char *) malloc(sizeof(int));
+    memcpy(data, &level, sizeof(int));
 
     // Craft the message and return it
-    Message_t res = new_message(GET_BLOCK_OPERATIONS, 4, data);
+    Message_t res = new_message(GET_BLOCK_OPERATIONS, sizeof(int), data);
     return res;
 }
 
 Message_t new_get_state_message(unsigned int level) {
     // Prepare the data
     level = reverse_int(level);
-    char *data = (char *) malloc(4);
-    memcpy(data, &level, 4);
+    char *data = (char *) malloc(sizeof(int));
+    memcpy(data, &level, sizeof(int));
 
     // Craft the message and return it
-    Message_t res = new_message(GET_BLOCK_STATE, 4, data);
+    Message_t res = new_message(GET_BLOCK_STATE, sizeof(int), data);
     return res;
 }
 
@@ -168,24 +168,24 @@ State_t get_state(Message_t message) {
 
 char *encode_message(Message_t message) {
     // Prepare the result and the pointer
-    char *res = (char *) malloc(MSG_SIZE_SIZE + MSG_TAG_SIZE + message->data_size);
-    char *ptr = res;
+    char *data_res = (char *) malloc(MSG_SIZE_SIZE + MSG_TAG_SIZE + message->data_size);
+    char *data_ptr = data_res;
 
     // Add the message size
     unsigned short msg_size = reverse_short(MSG_TAG_SIZE + message->data_size);
-    memcpy(ptr, &msg_size, MSG_SIZE_SIZE);
-    ptr += MSG_SIZE_SIZE;
+    memcpy(data_ptr, &msg_size, MSG_SIZE_SIZE);
+    data_ptr += MSG_SIZE_SIZE;
 
     // Add the message tag
     unsigned short tag = mess_type_to_tag(message->tag);
-    memcpy(ptr, &tag, MSG_TAG_SIZE);
-    ptr += MSG_TAG_SIZE;
+    memcpy(data_ptr, &tag, MSG_TAG_SIZE);
+    data_ptr += MSG_TAG_SIZE;
 
     // Add the message data
-    memcpy(ptr, message->data, message->data_size);
+    memcpy(data_ptr, message->data, message->data_size);
 
     // Return the result
-    return res;
+    return data_res;
 }
 
 Message_t decode_message(char *data) {
