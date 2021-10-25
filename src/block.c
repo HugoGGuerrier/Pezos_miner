@@ -46,7 +46,7 @@ char *encode_block(Block_t block) {
 
 Block_t decode_block(char *data) {
     // Declarations and allocations
-    int level;
+    unsigned int level;
     char *predecessor = (char *) malloc(HASH_SIZE);
     unsigned long timestamp;
     char *operations_hash = (char *) malloc(HASH_SIZE);

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <byteswap.h>
 
 #include "utils.h"
 
@@ -173,15 +174,15 @@ char compare_data(char *d1, size_t s1, char *d2, size_t s2) {
 }
 
 long reverse_long(long src) {
-    return (src>>56) | (src<<56) | ((src>>40) & 0xff00) | ((src<<40) & 0xff000000000000) | ((src>>24) & 0xff0000) | ((src<<24) & 0xff0000000000) | ((src>>8) & 0xff000000) | ((src<<8) & 0xff00000000);
+    return bswap_64(src);
 }
 
 int reverse_int(int src) {
-    return (src>>24) | (src<<24) | ((src>>8) & 0xff00) | ((src<<8) & 0xff0000);
+    return bswap_32(src);
 }
 
 short reverse_short(short src) {
-    return (src>>8) | (src<<8);
+    return bswap_16(src);
 }
 
 char *read_hex_string(char *hex_str) {

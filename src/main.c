@@ -41,7 +41,7 @@ void test_block() {
     assert(compare_data(encoded, BLOCK_CODE_SIZE, encoded_expect, BLOCK_CODE_SIZE));
 
     // Decode the block
-    Block_t decoded = decode_block(block);
+    Block_t decoded = decode_block(encoded);
 
     print_block(decoded);
 
@@ -67,28 +67,28 @@ void test_state() {
 }
 
 void tests() {
-    printf("========== TESTS ==========\n");
-    printf("===== Test Read Hex String =====\n");
+    printf("==================== TESTS ====================\n");
+    printf("========== Test Read Hex String ==========\n");
     test_read_hex_string();
 
-    printf("===== Test Account =====\n");
+    printf("========== Test Account ==========\n");
     test_account();
     
-    printf("OK\n===== Test Block =====\n");
+    printf("OK\n========== Test Block ==========\n");
     test_block();
     
-    printf("OK\n===== Test Message =====\n");
+    printf("OK\n========== Test Message ==========\n");
     test_message();
     
-    printf("OK\n===== Test Operation =====\n");
+    printf("OK\n========== Test Operation ==========\n");
     test_operation();
     
-    printf("OK\n===== Test State =====\n");
+    printf("OK\n========== Test State ==========\n");
     test_state();
     
     printf("OK\n");
     
-    printf("===========================\n");
+    printf("=====================================\n");
 }
 
 int main() {
