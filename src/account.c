@@ -14,23 +14,28 @@ char *encode_account(Account_t account) {
     data_ptr += KEY_SIZE;
 
     // Copy the account level pez
-    memcpy(data_ptr, reverse_int(account->level_pez), 4);
-    data_ptr += 4;
+    unsigned int real_pez_level = reverse_int(account->level_pez);
+    memcpy(data_ptr, &real_pez_level, sizeof(int));
+    data_ptr += sizeof(int);
 
     // Copy the account timestamp pez
-    memcpy(data_ptr, reverse_int(account->timestamp_pez), 4);
-    data_ptr += 4;
+    unsigned int real_timstamp_pez = reverse_int(account->timestamp_pez);
+    memcpy(data_ptr, &real_timstamp_pez, sizeof(int));
+    data_ptr += sizeof(int);
 
     // Copy the account operation hash pez
-    memcpy(data_ptr, reverse_int(account->operations_hash_pez), 4);
-    data_ptr += 4;
+    unsigned int real_operation_h_pez = reverse_int(account->operations_hash_pez);
+    memcpy(data_ptr, &real_operation_h_pez, sizeof(int));
+    data_ptr += sizeof(int);
 
     // Copy the account context hash pez
-    memcpy(data_ptr, reverse_int(account->context_hash_pez), 4);
-    data_ptr += 4;
+    unsigned int real_context_h_pez = reverse_int(account->context_hash_pez);
+    memcpy(data_ptr, &real_context_h_pez, sizeof(int));
+    data_ptr += sizeof(int);
 
     // Copy the account signature pez
-    memcpy(data_ptr, reverse_int(account->signature_pez), 4);
+    unsigned int real_sig_pez = reverse_int(account->signature_pez);
+    memcpy(data_ptr, &real_sig_pez, sizeof(int));
 
     return data_res;
 }
@@ -50,27 +55,27 @@ Account_t decode_account(char *data) {
     data += KEY_SIZE;
 
     // Copy the account level pez
-    memcpy(&level_pez, data, sizeof(unsigned int));
+    memcpy(&level_pez, data, sizeof(int));
     level_pez = reverse_int(level_pez);
-    data += 4;
+    data += sizeof(int);
 
     // Copy the account timestamp pez
-    memcpy(&timestamp_pez, data, sizeof(unsigned int));
+    memcpy(&timestamp_pez, data, sizeof(int));
     timestamp_pez = reverse_int(timestamp_pez);
-    data += 4;
+    data += sizeof(int);
 
     // Copy the account operation hash pez
-    memcpy(&operations_hash_pez, data, sizeof(unsigned int));
+    memcpy(&operations_hash_pez, data, sizeof(int));
     operations_hash_pez = reverse_int(operations_hash_pez);
-    data += 4;
+    data += sizeof(int);
 
     // Copy the account context hash pez
-    memcpy(&context_hash_pez, data, sizeof(unsigned int));
+    memcpy(&context_hash_pez, data, sizeof(int));
     context_hash_pez = reverse_int(context_hash_pez);
-    data += 4;
+    data += sizeof(int);
 
     // Copy the account signature pez
-    memcpy(&signature_pez, data, sizeof(unsigned int));
+    memcpy(&signature_pez, data, sizeof(int));
     signature_pez = reverse_int(signature_pez);
 
     // Build and return the account
