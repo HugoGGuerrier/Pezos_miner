@@ -79,7 +79,7 @@ Block_t decode_block(char *data) {
     memcpy(signature, data, SIG_SIZE);
 
     // Build and return the block
-    return new_block(level, predecessor, timestamp, operations_hash, operations_hash, signature);
+    return new_block(level, predecessor, timestamp, operations_hash, context_hash, signature);
 }
 
 
