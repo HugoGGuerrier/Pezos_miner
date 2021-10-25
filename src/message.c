@@ -10,7 +10,7 @@
 
 // ----- Internal functions -----
 
-unsigned short type_to_tag(Message_Type_t msg_type) {
+unsigned short mess_type_to_tag(Message_Type_t msg_type) {
     switch (msg_type) {
     case GET_CURRENT_HEAD:
         return reverse_short(1);
@@ -54,7 +54,7 @@ unsigned short type_to_tag(Message_Type_t msg_type) {
     }
 }
 
-Message_Type_t tag_to_type(unsigned short tag) {
+Message_Type_t mess_tag_to_type(unsigned short tag) {
     switch (tag) {
     case 1:
         return GET_CURRENT_HEAD;
@@ -177,7 +177,7 @@ char *encode_message(Message_t message) {
     ptr += MSG_SIZE_SIZE;
 
     // Add the message tag
-    unsigned short tag = type_to_tag(message->tag);
+    unsigned short tag = mess_type_to_tag(message->tag);
     memcpy(ptr, &tag, MSG_TAG_SIZE);
     ptr += MSG_TAG_SIZE;
 
@@ -195,7 +195,7 @@ Message_t decode_message(char *data) {
 
     // Get the tag
     unsigned short tag = reverse_short(*((unsigned short *) data));
-    Message_Type_t msg_type = tag_to_type(tag);
+    Message_Type_t msg_type = mess_tag_to_type(tag);
     data += MSG_TAG_SIZE;
 
     // Copy the data

@@ -8,7 +8,7 @@
 
 // ----- Internal functions -----
 
-unsigned short type_to_tag(Operation_Type_t op_type) {
+unsigned short op_type_to_tag(Operation_Type_t op_type) {
     switch (op_type) {
     case BAD_PREDECESSOR:
         return reverse_short(1);
@@ -36,7 +36,7 @@ unsigned short type_to_tag(Operation_Type_t op_type) {
     }
 }
 
-Operation_Type_t tag_to_type(unsigned short tag) {
+Operation_Type_t op_tag_to_type(unsigned short tag) {
     switch (tag) {
     case 1:
         return BAD_PREDECESSOR;
@@ -68,7 +68,7 @@ void sign_operation(Operation_t op) {
     char *ptr = to_hash;
 
     // Add the tag
-    unsigned short tag = type_to_tag(op->op_type);
+    unsigned short tag = op_type_to_tag(op->op_type);
     memcpy(ptr, &tag, OP_TAG_SIZE);
     ptr += OP_TAG_SIZE;
 
@@ -160,7 +160,7 @@ char *encode_operation(Operation_t operation) {
     char *ptr = res;
 
     // Prepare the operation type
-    unsigned short tag = type_to_tag(operation->op_type);
+    unsigned short tag = op_type_to_tag(operation->op_type);
 
     // Copy the tag in the operation
     memcpy(ptr, &tag, OP_TAG_SIZE);
