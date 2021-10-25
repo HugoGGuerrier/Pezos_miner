@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "account.h"
 #include "main.h"
 #include "blake2.h"
 #include "client.h"
 #include "utils.h"
 #include "block.h"
+#include "state.h"
 
 void test_read_hex_string(){
     print_hex(read_hex_string("0f"), 1, "\n");
@@ -63,7 +65,22 @@ void test_operation() {
 }
 
 void test_state() {
-    
+    // Making a dummy state
+    Account_t account = new_account(read_hex_string("46f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f"), 10, 20, 30, 40, 50);
+    Accounts_t accounts = new_accounts(account, NULL);
+    State_t state = new_state(read_hex_string("55900480c288c492b27be1b7a4fbbdd0317a0fd6c96087683c6477bdc08cd93c"), 1024, ACCOUNT_CODE_SIZE, accounts);
+
+    // Encoding the state
+    char* encoded_state = encode_state(state);
+
+    // Deconding the encoded state
+    State_t decoded_state = decode_state(encoded_state);
+
+    // Verifying data is ok
+    assert(compare_data(state->dictator_public_key, KEY_SIZE, decoded_state->dictator_public_key, KEY_SIZE));
+    assert(state->predecessor_timestamp == decoded_state->predecessor_timestamp);
+    assert(state->nb_account_bytes == decoded_state->nb_account_bytes);
+    assert(compare_data(state->accounts->head->user_public_key, KEY_SIZE, decoded_state->accounts->head->user_public_key, KEY_SIZE));
 }
 
 void tests() {

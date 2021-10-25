@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "state.h"
 #include "account.h"
@@ -11,23 +12,18 @@ char *encode_state(State_t state) {
     char *data_ptr = data_res;
 
     // Copy memory for each block field
-
     memcpy(data_ptr, state->dictator_public_key, KEY_SIZE);
     data_ptr = data_ptr + KEY_SIZE;
-
-    memcpy(data_ptr, state->predecessor_timestamp, 8);
+    memcpy(data_ptr, &state->predecessor_timestamp, sizeof(long));
     data_ptr = data_ptr + 8;
-
-    memcpy(data_ptr, state->nb_account_bytes, 4);
+    memcpy(data_ptr, &state->nb_account_bytes, sizeof(int));
     data_ptr = data_ptr + 4;
-
     Accounts_t accounts = state->accounts;
     while(accounts != NULL) {
         memcpy(data_ptr, encode_account(accounts->head), ACCOUNT_CODE_SIZE);
         data_ptr = data_ptr + ACCOUNT_CODE_SIZE;
         accounts = accounts->tail;
     }
-
     // Return the result
     return data_res;
 }
