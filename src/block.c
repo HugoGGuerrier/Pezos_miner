@@ -45,28 +45,27 @@ char *encode_block(Block_t block) {
 }
 
 Block_t decode_block(char *data) {
-
     // Declarations and allocations
     int level;
-    char *predecessor = (char *) malloc(32);
-    long timestamp = 0;
-    char *operations_hash = (char *) malloc(32);
-    char *context_hash = (char *) malloc (32);
-    char *signature = (char *) malloc (64);
+    char *predecessor = (char *) malloc(HASH_SIZE);
+    unsigned long timestamp;
+    char *operations_hash = (char *) malloc(HASH_SIZE);
+    char *context_hash = (char *) malloc (HASH_SIZE);
+    char *signature = (char *) malloc (SIG_SIZE);
 
     // Copy the block level
-    memcpy(&level, data, 4);
+    memcpy(&level, data, sizeof(int));
     level = reverse_int(level);
-    data += 4; 
+    data += sizeof(int);
 
     // Copy the block predecessor hash
     memcpy(predecessor, data, HASH_SIZE);
     data += HASH_SIZE;
 
     // Copy the block timestamp
-    memcpy(&timestamp, data, 8);
+    memcpy(&timestamp, data, sizeof(long));
     timestamp = reverse_long(timestamp);
-    data += 8;
+    data += sizeof(long);
 
     // Copy the block operations hash
     memcpy(operations_hash, data, HASH_SIZE);
