@@ -113,13 +113,13 @@ unsigned char *ops_hash(Operations_t ops) {
     return res_buf;
 }
 
-Operation_t verify_bloc(Block_t b) {
-    Block_t pred = get_block(send_message_with_response(new_get_block_message(b->level - 1)));
-    State_t state = get_state(send_message_with_response(new_get_state_message(b->level)));
+Operation_t verify_bloc(Block_t b, Block_t pred, State_t state) {
+    // Block_t pred = get_block(send_message_with_response(new_get_block_message(b->level - 1)));
+    // State_t state = get_state(send_message_with_response(new_get_state_message(b->level)));
 
     // Verifying timestamp
     long time = b->timestamp - pred->timestamp;
-    if (time < 600) {
+    if (time < BLOCK_TIME) {
         return new_bad_timestamp(state->predecessor_timestamp + 10);
     }
 
