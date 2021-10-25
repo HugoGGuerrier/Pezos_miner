@@ -12,6 +12,6 @@ char *encode_block(Block_t block);
 Block_t decode_block(char *data);
 
 // Verify a block correctness
-int verify_bloc(Block_t block);
+Operation_t verify_bloc(Block_t block);
 
 #endif

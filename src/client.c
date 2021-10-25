@@ -5,17 +5,15 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <sys/time.h>
 
 #include "client.h"
 #include "hash.h"
 #include "signature.h"
 
-// --- Constant definition
-
-#define RAND_SEED_SIZE 24
-
 // --- Function declaration
 
+int read_timeout(int file_desc, void *buffer, size_t size, int *timeout);
 int auth();
 int client_loop();
 int test_connection();
@@ -27,6 +25,32 @@ int handle_message();
 int sock_id;
 
 char buff[BUFF_SIZE];
+
+
+// --- Utils function
+
+int read_timeout(int file_desc, void *buffer, size_t size, int *timeout) {
+    // Create the working variables
+    fd_set set;
+    struct timeval timeout_s;
+    int select_res;
+
+    // Initialize the set
+    FD_ZERO(&set);
+    FD_SET(file_desc, &set);
+
+    // Set the timeout
+    timeout_s.tv_sec = timeout;
+
+    // Do the select operation
+    select_res = select(file_desc + 1, &set, NULL, NULL, &timeout_s);
+    if(select_res == 0 || select_res == -1) {
+        return select_res;
+    } else {
+        read(file_desc, buffer, size);
+        return 1;
+    }
+}
 
 
 // --- Client running code
@@ -73,32 +97,50 @@ int start_client(const char *addr, unsigned short port) {
 }
 
 int auth() {
+    // Prepare working variables
+    int tmp;
+
     // Get the random seed from the server
-    if(read(sock_id, buff, BUFF_SIZE) == -1) {
+    tmp = read_timeout(sock_id, buff, BUFF_SIZE, 10);
+    if(tmp == -1) {
         printf("Error in authentification : Cannot read the random seed from the server\n");
         return 1;
+    } else if(tmp == 0) {
+        printf("Error in authentification : Reading timeout expired");
     }
     char rand_seed[RAND_SEED_SIZE];
     memcpy(&rand_seed, &buff, RAND_SEED_SIZE);
 
-    // Send the key
+    // Get the public key
     char public_key[KEY_SIZE] = PUBLIC_KEY;
+
+    // Prepare the message to send to the server
+    char public_key_msg[2 + KEY_SIZE];
+    public_key_msg[1] = KEY_SIZE;
+    memcpy(public_key_msg[2], public_key, KEY_SIZE);
+
+    // Send the key to the server
     if(write(sock_id, &public_key, KEY_SIZE) == -1) {
         printf("Error in authentification : Cannot send the public key to the server\n");
         return 1;
     }
 
-    // Send the signed hash value of the random seed
+    // Hash the random seed
     char rand_hash[HASH_SIZE];
     hash(rand_seed, RAND_SEED_SIZE, rand_hash);
+
+    // Prepare the message for the signed hashed random seed and its size
     char rand_hash_sign[64 + 2];
     rand_hash_sign[1] = 64;
     sign(rand_hash_sign[2], rand_hash, HASH_SIZE);
+
+    // Send the signature to the server
     if(write(sock_id, rand_hash_sign, 64) == -1) {
         printf("Error in authentification : Cannot send the random seed hash signature to the server\n");
         return 1;
     }
 
+    // Test the connection
     if(test_connection() != 0) {
         printf("Error in authentification : Server didn't accept the connection\n");
         return 1;
@@ -115,8 +157,18 @@ int client_loop() {
 // --- Client manipulation functions
 
 int test_connection() {
-    // TODO : Test the connection by sending a simple request
-    return 0;
+    // Prepare the working variables
+    int error = 0;
+    socklen_t len = sizeof(error);
+
+    // Get the socket state
+    int res = getsockopt(sock_id, SOL_SOCKET, SO_ERROR, &error, &len);
+
+    // Return the result
+    if(res == 0 && error == 0) {
+        return 0;
+    }
+    return 1;
 }
 
 int handle_message() {
