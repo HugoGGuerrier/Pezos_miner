@@ -41,7 +41,6 @@ char *encode_account(Account_t account) {
 }
 
 Account_t decode_account(char *data) {
-
     // Declarations and allocations
     char *user_public_key = malloc(KEY_SIZE);
     unsigned int level_pez;

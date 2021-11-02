@@ -4,7 +4,7 @@ CFLAGS=-W -Wall -O3
 LDFLAGS=-Llib
 EXEC=out/pezos_miner
 
-SRC=src/account.c src/block.c src/client.c src/hash.c src/main.c src/message.c src/operation.c src/signature.c src/state.c src/utils.c
+SRC=src/account.c src/block.c src/client.c src/hash.c src/main.c src/message.c src/operation.c src/signature.c src/state.c src/test.c src/utils.c
 LIB=${SRC:src%.c=include%.h}
 OBJ=${SRC:src%.c=obj%.o}
 
@@ -34,3 +34,7 @@ purge: clean
 run: all
 	export LD_LIBRARY_PATH=./lib; \
 	./${EXEC}
+
+test: all
+	export LD_LIBRARY_PATH=./lib; \
+	./${EXEC} -t

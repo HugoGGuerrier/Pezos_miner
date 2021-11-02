@@ -14,8 +14,10 @@
     {                                                                                                                                                                                                  \
         0xd9, 0x66, 0x1d, 0x1a, 0x70, 0x95, 0x18, 0xef, 0x62, 0x13, 0x11, 0x75, 0x08, 0xac, 0xba, 0xe0, 0xc9, 0xb0, 0x4f, 0x33, 0x8d, 0x01, 0x7a, 0x28, 0x63, 0x3b, 0xc4, 0xa1, 0xc1, 0x5e, 0x13, 0x69 \
     }
+    
 
 // ----- Types and enum defining -----
+
 
 // --- Enumeration for all message tag
 typedef enum
@@ -31,6 +33,7 @@ typedef enum
     INJECT_OPERATION,
 } Message_Type_t;
 
+
 // --- Enumeration for all server operation type
 typedef enum
 {
@@ -41,18 +44,20 @@ typedef enum
     BAD_SIGNATURE,
 } Operation_Type_t;
 
+
 // --- Type that represents a block
 typedef struct block *Block_t;
 
 struct block
 {
-    int level;
+    unsigned int level;
     char *predecessor;
-    long timestamp;
+    unsigned long timestamp;
     char *operations_hash;
     char *context_hash;
     char *signature;
 };
+
 
 // --- Type that represents a message
 typedef struct message *Message_t;
@@ -63,6 +68,7 @@ struct message
     unsigned short data_size;
     char *data;
 };
+
 
 // --- Type that represent an operation
 typedef struct operation *Operation_t;
@@ -76,6 +82,7 @@ struct operation
     char *signature;
 };
 
+
 // --- Type thar represent an operations list
 typedef struct operations *Operations_t;
 
@@ -84,6 +91,7 @@ struct operations
     Operation_t head;
     Operations_t tail;
 };
+
 
 // --- Type that represents an account
 typedef struct account *Account_t;
@@ -98,6 +106,7 @@ struct account
     unsigned int signature_pez;
 };
 
+
 // --- Type that represent an accout list
 typedef struct accounts *Accounts_t;
 
@@ -106,6 +115,7 @@ struct accounts
     Account_t head;
     Accounts_t tail;
 };
+
 
 // --- Type that represents a state
 typedef struct state *State_t;
@@ -118,7 +128,9 @@ struct state
     Accounts_t accounts;
 };
 
+
 // ----- Utils function definitions -----
+
 
 // --- Data creation and deletion functions
 
@@ -141,7 +153,7 @@ Operations_t new_operations(Operation_t head, Operations_t tail);
 void delete_operations(Operations_t operations);
 
 // Create a new block from the given data
-Block_t new_block(int level, char *pred, long time, char *ope_h, char *ctx_h, char *sig);
+Block_t new_block(unsigned int level, char *pred, unsigned long time, char *ope_h, char *ctx_h, char *sig);
 
 // Delete a block
 void delete_block(Block_t block);
@@ -164,6 +176,7 @@ Accounts_t new_accounts(Account_t head, Accounts_t tail);
 // Delete recursivly an account list
 void delete_accounts(Accounts_t accounts);
 
+
 // --- Printing functions
 
 // Print an operation
@@ -178,8 +191,12 @@ void print_account(Account_t account);
 // Print a message
 void print_message(Message_t message);
 
+// Print a state
+void print_state(State_t state);
+
 // Print a data in hexadecimal form
 void print_hex(char *thing, size_t size, const char *end);
+
 
 // --- Miscallenous functions
 

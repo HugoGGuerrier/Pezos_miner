@@ -48,4 +48,10 @@ char *encode_message(Message_t message);
 // Decode binary to a message
 Message_t decode_message(char *data);
 
+
+// ----- Utils functions -----
+
+// Get the string for a message type
+char *msg_type_str(const Message_Type_t type);
+
 #endif

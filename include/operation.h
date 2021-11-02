@@ -35,4 +35,10 @@ Operation_t decode_operation(char *data);
 // Decode the operations and return a reversed list of them
 Operations_t decode_operations(char *data, size_t data_size);
 
+
+// ----- Utils functions -----
+
+// Get the string for an operation type
+char *op_type_str(const Operation_Type_t type);
+
 #endif

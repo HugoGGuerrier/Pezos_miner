@@ -6,47 +6,57 @@
 
 char *encode_state(State_t state) {
     // Prepare the result encoded data
-    char *data_res = malloc(STATE_CODE_SIZE_MIN + state->nb_account_bytes);
+    char *data_res = (char *) malloc(STATE_CODE_SIZE_MIN + state->nb_account_bytes);
 
     // Prepare a copy of the address to iterate on
     char *data_ptr = data_res;
 
-    // Copy memory for each block field
+    // Copy the dictator public key
     memcpy(data_ptr, state->dictator_public_key, KEY_SIZE);
-    data_ptr = data_ptr + KEY_SIZE;
-    memcpy(data_ptr, &state->predecessor_timestamp, sizeof(long));
-    data_ptr = data_ptr + 8;
-    memcpy(data_ptr, &state->nb_account_bytes, sizeof(int));
-    data_ptr = data_ptr + 4;
+    data_ptr += KEY_SIZE;
+
+    // Copy the predecessor timestamp
+    unsigned long real_timestamp = reverse_long(state->predecessor_timestamp);
+    memcpy(data_ptr, &real_timestamp, sizeof(long));
+    data_ptr += sizeof(long);
+
+    // Copy the number of account bytes
+    unsigned int real_nb_bytes = reverse_int(state->nb_account_bytes);
+    memcpy(data_ptr, &real_nb_bytes, sizeof(int));
+
+    // Copy the accounts
+    data_ptr = data_res + (STATE_CODE_SIZE_MIN + state->nb_account_bytes) - ACCOUNT_CODE_SIZE;
     Accounts_t accounts = state->accounts;
     while(accounts != NULL) {
-        memcpy(data_ptr, encode_account(accounts->head), ACCOUNT_CODE_SIZE);
-        data_ptr = data_ptr + ACCOUNT_CODE_SIZE;
+        char *encoded = encode_account(accounts->head);
+        memcpy(data_ptr, encoded, ACCOUNT_CODE_SIZE);
+        free(encoded);
+        data_ptr -= ACCOUNT_CODE_SIZE;
         accounts = accounts->tail;
     }
+
     // Return the result
     return data_res;
 }
 
 State_t decode_state(char *data) {
-
     // Declarations and allocations
-
-    char *dictator_public_key = malloc(KEY_SIZE);
+    char *dictator_public_key = (char *) malloc(KEY_SIZE);
     unsigned long predecessor_timestamp;
     unsigned int nb_account_bytes;
     Accounts_t accounts = NULL;
 
-    // Memory copy
-    
+    // Get the dictator public key
     memcpy(dictator_public_key, data, KEY_SIZE);
-    data = data + KEY_SIZE;
+    data += KEY_SIZE;
 
-    memcpy(&predecessor_timestamp, data, sizeof(unsigned long));
-    data = data + sizeof(unsigned long);
+    // Get the predecessor timestamps
+    predecessor_timestamp = reverse_long(*((unsigned long *) data));
+    data += sizeof(long);
 
-    memcpy(&nb_account_bytes, data, sizeof(unsigned int));
-    data = data + sizeof(unsigned int);
+    // Get the number of account bytes
+    nb_account_bytes = reverse_int(*((unsigned int *) data));
+    data += sizeof(int);
 
     accounts = decode_accounts(data, nb_account_bytes/ACCOUNT_CODE_SIZE);
 

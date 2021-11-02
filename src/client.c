@@ -27,32 +27,6 @@ int sock_id;
 char buff[BUFF_SIZE];
 
 
-// --- Utils function
-
-int read_timeout(int file_desc, void *buffer, size_t size, int *timeout) {
-    // Create the working variables
-    fd_set set;
-    struct timeval timeout_s;
-    int select_res;
-
-    // Initialize the set
-    FD_ZERO(&set);
-    FD_SET(file_desc, &set);
-
-    // Set the timeout
-    timeout_s.tv_sec = timeout;
-
-    // Do the select operation
-    select_res = select(file_desc + 1, &set, NULL, NULL, &timeout_s);
-    if(select_res == 0 || select_res == -1) {
-        return select_res;
-    } else {
-        read(file_desc, buffer, size);
-        return 1;
-    }
-}
-
-
 // --- Client running code
 
 int start_client(const char *addr, unsigned short port) {
@@ -67,6 +41,12 @@ int start_client(const char *addr, unsigned short port) {
     // Set the explicit blocking mode
     int mode = 0;
     ioctl(sock_id, FIONBIO, &mode);
+
+    // Set the socket timeout
+    struct timeval tv;
+    tv.tv_sec = TIMEOUT_SEC;
+    tv.tv_usec = 0;
+    setsockopt(sock_id, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 
     // Create the server address
     struct sockaddr_in server_address;
@@ -100,13 +80,10 @@ int auth() {
     // Prepare working variables
     int tmp;
 
-    // Get the random seed from the server
-    tmp = read_timeout(sock_id, buff, BUFF_SIZE, 10);
-    if(tmp == -1) {
+    // Read the random seed from the server
+    if(read(sock_id, buff, BUFF_SIZE) == -1) {
         printf("Error in authentification : Cannot read the random seed from the server\n");
         return 1;
-    } else if(tmp == 0) {
-        printf("Error in authentification : Reading timeout expired");
     }
     char rand_seed[RAND_SEED_SIZE];
     memcpy(&rand_seed, &buff, RAND_SEED_SIZE);

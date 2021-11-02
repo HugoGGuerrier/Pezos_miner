@@ -10,91 +10,73 @@
 
 // ----- Internal functions -----
 
-unsigned short mess_type_to_tag(Message_Type_t msg_type) {
+unsigned short msg_type_to_tag(Message_Type_t msg_type) {
     switch (msg_type) {
     case GET_CURRENT_HEAD:
         return reverse_short(1);
-        break;
 
     case CURRENT_HEAD:
         return reverse_short(2);
-        break;
 
     case GET_BLOCK:
         return reverse_short(3);
-        break;
 
     case BLOCK:
         return reverse_short(4);
-        break;
 
     case GET_BLOCK_OPERATIONS:
         return reverse_short(5);
-        break;
 
     case BLOCK_OPERATIONS:
         return reverse_short(6);
-        break;
 
     case GET_BLOCK_STATE:
         return reverse_short(7);
-        break;
 
     case BLOCK_STATE:
         return reverse_short(8);
-        break;
 
     case INJECT_OPERATION:
         return reverse_short(9);
-        break;
     
     default:
         printf("Error in message encoding : Unknown message type\n");
-        exit(0);
+        exit(1);
     }
 }
 
-Message_Type_t mess_tag_to_type(unsigned short tag) {
+Message_Type_t tag_to_msg_type(unsigned short tag) {
     switch (tag) {
     case 1:
         return GET_CURRENT_HEAD;
-        break;
 
     case 2:
         return CURRENT_HEAD;
-        break;
 
     case 3:
         return GET_BLOCK;
-        break;
 
     case 4:
         return BLOCK;
-        break;
 
     case 5:
         return GET_BLOCK_OPERATIONS;
-        break;
 
     case 6:
         return BLOCK_OPERATIONS;
-        break;
 
     case 7:
         return GET_BLOCK_STATE;
-        break;
 
     case 8:
         return BLOCK_STATE;
-        break;
 
     case 9:
         return INJECT_OPERATION;
-        break;
     
     default:
         printf("Error in message encoding : Unknown message tag\n");
-        exit(0);
+        exit(1);
     }
 }
 
@@ -177,7 +159,7 @@ char *encode_message(Message_t message) {
     data_ptr += MSG_SIZE_SIZE;
 
     // Add the message tag
-    unsigned short tag = mess_type_to_tag(message->tag);
+    unsigned short tag = msg_type_to_tag(message->tag);
     memcpy(data_ptr, &tag, MSG_TAG_SIZE);
     data_ptr += MSG_TAG_SIZE;
 
@@ -189,19 +171,63 @@ char *encode_message(Message_t message) {
 }
 
 Message_t decode_message(char *data) {
+    // Declaration and allocations
+    unsigned short msg_size;
+    unsigned short tag;
+    Message_Type_t msg_type;
+    char *msg_data = NULL;
+
     // Get the message size
-    unsigned short msg_size = reverse_short(*((unsigned short *) data)) - MSG_TAG_SIZE;
+    msg_size = reverse_short(*((unsigned short *) data)) - MSG_TAG_SIZE;
     data += MSG_SIZE_SIZE;
 
     // Get the tag
-    unsigned short tag = reverse_short(*((unsigned short *) data));
-    Message_Type_t msg_type = mess_tag_to_type(tag);
+    tag = reverse_short(*((unsigned short *) data));
+    msg_type = tag_to_msg_type(tag);
     data += MSG_TAG_SIZE;
 
     // Copy the data
-    char *msg_data = (char *) malloc(msg_size);
+    msg_data = (char *) malloc(msg_size);
     memcpy(msg_data, data, msg_size);
 
     // Create the message
     return new_message(msg_type, msg_size, msg_data);
+}
+
+
+// ----- Utils functions -----
+
+char *msg_type_str(const Message_Type_t type) {
+    switch (type) {
+    case GET_CURRENT_HEAD:
+        return "GET_CURRENT_HEAD";
+
+    case CURRENT_HEAD:
+        return "CURRENT_HEAD";
+
+    case GET_BLOCK:
+        return "GET_BLOCK";
+
+    case BLOCK:
+        return "BLOCK";
+
+    case GET_BLOCK_OPERATIONS:
+        return "GET_BLOCK_OPERATIONS";
+
+    case BLOCK_OPERATIONS:
+        return "BLOCK_OPERATIONS";
+
+    case GET_BLOCK_STATE:
+        return "GET_BLOCK_STATE";
+
+    case BLOCK_STATE:
+        return "BLOCK_STATE";
+
+    case INJECT_OPERATION:
+        return "INJECT_OPERATION";
+    
+    default:
+        printf("Error in message encoding : Unknown message type\n");
+        exit(1);
+    }
 }

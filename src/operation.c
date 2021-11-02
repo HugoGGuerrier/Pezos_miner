@@ -6,29 +6,25 @@
 #include "hash.h"
 #include "signature.h"
 
+
 // ----- Internal functions -----
 
 unsigned short op_type_to_tag(Operation_Type_t op_type) {
     switch (op_type) {
     case BAD_PREDECESSOR:
         return reverse_short(1);
-        break;
 
     case BAD_TIMESTAMP:
         return reverse_short(2);
-        break;
 
     case BAD_OPERATIONS_HASH:
        return reverse_short(3);
-        break;
 
     case BAD_CONTEXT_HASH:
         return reverse_short(4);
-        break;
 
     case BAD_SIGNATURE:
         return reverse_short(5);
-        break;
     
     default:
         printf("Error in operation encoding : Unknown operation tag\n");
@@ -36,7 +32,7 @@ unsigned short op_type_to_tag(Operation_Type_t op_type) {
     }
 }
 
-Operation_Type_t op_tag_to_type(unsigned short tag) {
+Operation_Type_t tag_to_op_type(unsigned short tag) {
     switch (tag) {
     case 1:
         return BAD_PREDECESSOR;
@@ -258,4 +254,31 @@ Operations_t decode_operations(char *data, size_t size) {
 
     // Return the result
     return res;
+}
+
+
+// ----- Utils functions -----
+
+
+char *op_type_str(const Operation_Type_t type) {
+    switch (type) {
+    case BAD_PREDECESSOR:
+        return "BAD_PREDECESSOR";
+
+    case BAD_TIMESTAMP:
+        return "BAD_TIMESTAMP";
+
+    case BAD_OPERATIONS_HASH:
+       return "BAD_OPERATIONS_HASH";
+
+    case BAD_CONTEXT_HASH:
+        return "BAD_CONTEXT_HASH";
+
+    case BAD_SIGNATURE:
+        return "BAD_SIGNATURE";
+    
+    default:
+        printf("Error in operation encoding : Unknown operation tag\n");
+        exit(1);
+    }
 }
