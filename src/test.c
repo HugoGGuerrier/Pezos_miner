@@ -1,6 +1,7 @@
 #include <stdlib.h>
-#include <assert.h>
 #include <stdio.h>
+#include <string.h>
+#include <assert.h>
 
 #include "test.h"
 #include "signature.h"
@@ -192,6 +193,24 @@ void test_operation() {
     assert(compare_data(op_4->user_key, KEY_SIZE, decoded_4->user_key, KEY_SIZE));
     assert(compare_data(op_5->user_key, KEY_SIZE, decoded_5->user_key, KEY_SIZE));
     
+    // Test the operation list decoding
+    char *operations_code = (char *) malloc(OP_CODE_SIZE_MIN * 3 + (op_1->data_size + op_2->data_size + op_3->data_size));
+    char *ptr = operations_code;
+
+    memcpy(ptr, enc_3, (OP_CODE_SIZE_MIN + op_3->data_size));
+    ptr += (OP_CODE_SIZE_MIN + op_3->data_size);
+
+    memcpy(ptr, enc_2, (OP_CODE_SIZE_MIN + op_2->data_size));
+    ptr += (OP_CODE_SIZE_MIN + op_2->data_size);
+
+    memcpy(ptr, enc_1, (OP_CODE_SIZE_MIN + op_1->data_size));
+
+    Operations_t ops = decode_operations(operations_code, OP_CODE_SIZE_MIN * 3 + (op_1->data_size + op_2->data_size + op_3->data_size));
+    assert(ops->head->op_type == op_1->op_type);
+    assert(ops->tail->head->op_type == op_2->op_type);
+    assert(ops->tail->tail->head->op_type == op_3->op_type);
+    assert(ops->tail->tail->tail == NULL);
+
     // Free the memory
     delete_operation(op_1);
     delete_operation(op_2);
@@ -208,6 +227,7 @@ void test_operation() {
     free(enc_3);
     free(enc_4);
     free(enc_5);
+    free(operations_code);
 
     printf("\n===> OK\n");
 }
