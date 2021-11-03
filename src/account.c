@@ -2,6 +2,7 @@
 
 #include "account.h"
 
+
 char *encode_account(Account_t account) {
     // Prepare the result encoded data
     char *data_res = (char *) malloc(ACCOUNT_CODE_SIZE);

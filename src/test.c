@@ -23,29 +23,21 @@ void test_read_hex_string() {
 void test_signature() {
     // Get the public key and compare it
 
-    // Hard verify
-    unsigned char seed[32];
-    unsigned char signature[64];
-    unsigned char public_key[32];
-    unsigned char private_key[64];
+    // TODO
 
-    ed25519_create_seed(seed);
-    ed25519_create_keypair(public_key, private_key, seed);
+    printf("===> OK\n");
+}
 
-    print_hex(public_key, 32, "\n");
-    print_hex(private_key, 64, "\n");
 
-    ed25519_sign(signature, "test", 4, public_key, private_key);
-    int res = ed25519_verify(signature, "test", 4, public_key);
-
-    assert(res != 0);
+void test_hash() {
+    // TODO
 
     printf("===> OK\n");
 }
 
 
 void test_account() {
-    // Random account example
+    // Dummy account example
     char *user_public_key = read_hex_string("aca76354de343ef09385e263fb59561855d3cbf167961c6955624d91aa7eecf5");
     unsigned int level_pez = 1;
     unsigned int timestamp_pez = 2;
@@ -164,7 +156,25 @@ void test_operation() {
     char *enc_4 = encode_operation(op_4);
     char *enc_5 = encode_operation(op_5);
 
-    print_hex(enc_1, OP_CODE_SIZE_MIN + op_1->data_size, "\n");
+    // Decode the operations
+    Operation_t decoded_1 = decode_operation(enc_1);
+    Operation_t decoded_2 = decode_operation(enc_2);
+    Operation_t decoded_3 = decode_operation(enc_3);
+    Operation_t decoded_4 = decode_operation(enc_4);
+    Operation_t decoded_5 = decode_operation(enc_5);
+
+    // Check the operations data
+    assert(op_1->op_type == decoded_1->op_type);
+    assert(op_2->op_type == decoded_2->op_type);
+    assert(op_3->op_type == decoded_3->op_type);
+    assert(op_4->op_type == decoded_4->op_type);
+    assert(op_5->op_type == decoded_5->op_type);
+
+    assert(op_1->data_size == decoded_1->data_size);
+    assert(op_2->data_size == decoded_2->data_size);
+    assert(op_3->data_size == decoded_3->data_size);
+    assert(op_4->data_size == decoded_4->data_size);
+    assert(op_5->data_size == decoded_5->data_size);
     
     // Free the memory
     delete_operation(op_1);
@@ -172,6 +182,11 @@ void test_operation() {
     delete_operation(op_3);
     delete_operation(op_4);
     delete_operation(op_5);
+    delete_operation(decoded_1);
+    delete_operation(decoded_2);
+    delete_operation(decoded_3);
+    delete_operation(decoded_4);
+    delete_operation(decoded_5);
     free(enc_1);
     free(enc_2);
     free(enc_3);
@@ -235,6 +250,9 @@ void run_tests() {
     
     printf("\n========== Test Signature ==========\n\n");
     test_signature();
+
+    printf("\n========== Test Hash ==========\n\n");
+    test_hash();
 
     printf("\n========== Test Account ==========\n\n");
     test_account();

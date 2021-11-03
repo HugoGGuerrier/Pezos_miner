@@ -2,10 +2,9 @@
 #define BLOCK_H
 
 #define BLOCK_TIME 600
+#define BLOCK_CODE_SIZE (64 + 32 + 32 + 32 + 8 + 4)
 
 #include "utils.h"
-
-#define BLOCK_CODE_SIZE (64 + 32 + 32 + 32 + 8 + 4)
 
 
 // ----- Block encoding and decoding functions -----

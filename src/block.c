@@ -8,6 +8,8 @@
 #include "utils.h"
 
 
+// ----- Block encoding and decoding functions -----
+
 char *encode_block(Block_t block) {
     // Prepare the result encoded data
     char *data_res = (char *) malloc(BLOCK_CODE_SIZE);
@@ -83,7 +85,7 @@ Block_t decode_block(char *data) {
 }
 
 
-// --- Block verification
+// ----- Block verification -----
 
 unsigned char *ops_hash(Operations_t ops) {
     unsigned char *res_buf = malloc(32);

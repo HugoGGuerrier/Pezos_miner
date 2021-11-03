@@ -18,7 +18,7 @@ unsigned short op_type_to_tag(Operation_Type_t op_type) {
         return reverse_short(2);
 
     case BAD_OPERATIONS_HASH:
-       return reverse_short(3);
+        return reverse_short(3);
 
     case BAD_CONTEXT_HASH:
         return reverse_short(4);
@@ -36,11 +36,9 @@ Operation_Type_t tag_to_op_type(unsigned short tag) {
     switch (tag) {
     case 1:
         return BAD_PREDECESSOR;
-        break;
 
     case 2:
         return BAD_TIMESTAMP;
-        break;
 
     case 3:
         return BAD_OPERATIONS_HASH;
@@ -86,11 +84,10 @@ void sign_operation(Operation_t op) {
     char *signature = (char *) malloc(SIG_SIZE);
     sign(signature, to_sign, HASH_SIZE);
 
-    printf("VERIFYING : %d\n", verify(signature, to_sign, HASH_SIZE, get_public_key_copy()));
-
     // Put it in the operation
     op->signature = signature;
 }
+
 
 // ----- Operation specific creation functions ------
 
@@ -203,19 +200,21 @@ Operation_t decode_operation(char *data) {
     case 3:
         op_type = BAD_OPERATIONS_HASH;
         data_size = 32;
+        break;
 
     case 4:
         op_type = BAD_CONTEXT_HASH;
         data_size = 32;
+        break;
 
     case 5:
         op_type = BAD_SIGNATURE;
         data_size = 0;
+        break;
     
     default:
         printf("Error in operation decoding : Unknown operation tag\n");
         exit(1);
-        break;
     }
 
     // Create the operation data
@@ -271,7 +270,7 @@ char *op_type_str(const Operation_Type_t type) {
         return "BAD_TIMESTAMP";
 
     case BAD_OPERATIONS_HASH:
-       return "BAD_OPERATIONS_HASH";
+        return "BAD_OPERATIONS_HASH";
 
     case BAD_CONTEXT_HASH:
         return "BAD_CONTEXT_HASH";

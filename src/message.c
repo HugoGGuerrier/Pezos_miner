@@ -146,7 +146,7 @@ State_t get_state(Message_t message) {
 }
 
 
-// --- Encoding and decoding functions
+// ----- Message encoding and decoding functions -----
 
 char *encode_message(Message_t message) {
     // Prepare the result and the pointer

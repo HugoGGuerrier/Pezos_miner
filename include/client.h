@@ -7,6 +7,7 @@
 
 #include "utils.h"
 
+
 // Start the client and do the login on the server
 int start_client(const char *addr, unsigned short port);
 

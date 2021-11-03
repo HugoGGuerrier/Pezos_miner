@@ -4,7 +4,7 @@
 #include "main.h"
 #include "test.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char *argv[]) {
     // Parse the arg to see if it is the test mode
     if(argc >= 2) {
         if(strcmp(argv[1], "-t") == 0 || strcmp(argv[1], "-test") == 0) {

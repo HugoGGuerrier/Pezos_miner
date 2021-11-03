@@ -4,6 +4,7 @@
 #include "state.h"
 #include "account.h"
 
+
 char *encode_state(State_t state) {
     // Prepare the result encoded data
     char *data_res = (char *) malloc(STATE_CODE_SIZE_MIN + state->nb_account_bytes);

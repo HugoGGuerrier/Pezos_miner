@@ -1,9 +1,9 @@
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
 
-#include "utils.h"
-
 #define ACCOUNT_CODE_SIZE (KEY_SIZE + 5*4) 
+
+#include "utils.h"
 
 
 // ----- Account encoding and decoding functions -----

@@ -1,7 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-// --- Hard define the public and private key (Not very secure...)
+
+// ----- Hard define the public and private key (Not very secure...) -----
 
 #define HASH_SIZE 32
 #define KEY_SIZE 32
