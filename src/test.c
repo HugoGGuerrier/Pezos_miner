@@ -21,8 +21,6 @@ void test_read_hex_string() {
 
 
 void test_signature() {
-    // Get the public key and compare it
-
     // TODO
 
     printf("===> OK\n");
@@ -175,6 +173,24 @@ void test_operation() {
     assert(op_3->data_size == decoded_3->data_size);
     assert(op_4->data_size == decoded_4->data_size);
     assert(op_5->data_size == decoded_5->data_size);
+
+    assert(compare_data(op_1->data, op_1->data_size, decoded_1->data, decoded_1->data_size));
+    assert(compare_data(op_2->data, op_2->data_size, decoded_2->data, decoded_2->data_size));
+    assert(compare_data(op_3->data, op_3->data_size, decoded_3->data, decoded_3->data_size));
+    assert(compare_data(op_4->data, op_4->data_size, decoded_4->data, decoded_4->data_size));
+    assert(compare_data(op_5->data, op_5->data_size, decoded_5->data, decoded_5->data_size));
+
+    assert(compare_data(op_1->signature, SIG_SIZE, decoded_1->signature, SIG_SIZE));
+    assert(compare_data(op_2->signature, SIG_SIZE, decoded_2->signature, SIG_SIZE));
+    assert(compare_data(op_3->signature, SIG_SIZE, decoded_3->signature, SIG_SIZE));
+    assert(compare_data(op_4->signature, SIG_SIZE, decoded_4->signature, SIG_SIZE));
+    assert(compare_data(op_5->signature, SIG_SIZE, decoded_5->signature, SIG_SIZE));
+
+    assert(compare_data(op_1->user_key, KEY_SIZE, decoded_1->user_key, KEY_SIZE));
+    assert(compare_data(op_2->user_key, KEY_SIZE, decoded_2->user_key, KEY_SIZE));
+    assert(compare_data(op_3->user_key, KEY_SIZE, decoded_3->user_key, KEY_SIZE));
+    assert(compare_data(op_4->user_key, KEY_SIZE, decoded_4->user_key, KEY_SIZE));
+    assert(compare_data(op_5->user_key, KEY_SIZE, decoded_5->user_key, KEY_SIZE));
     
     // Free the memory
     delete_operation(op_1);
