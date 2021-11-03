@@ -15,6 +15,6 @@ char *encode_account(Account_t account);
 Account_t decode_account(char *data);
 
 // Take a byte sequence and decode it as an account sequence
-Accounts_t decode_accounts(char *data, unsigned int nb_accounts);
+Accounts_t decode_accounts(char *data, size_t size);
 
 #endif

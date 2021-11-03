@@ -2,6 +2,7 @@
 #define OPERATION_H
 
 #define OP_TAG_SIZE 2
+#define OP_CODE_SIZE_MIN (2 + SIG_SIZE + KEY_SIZE)
 
 #include "utils.h"
 

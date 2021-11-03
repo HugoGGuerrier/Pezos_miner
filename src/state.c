@@ -58,7 +58,7 @@ State_t decode_state(char *data) {
     nb_account_bytes = reverse_int(*((unsigned int *) data));
     data += sizeof(int);
 
-    accounts = decode_accounts(data, nb_account_bytes/ACCOUNT_CODE_SIZE);
+    accounts = decode_accounts(data, (size_t) nb_account_bytes);
 
     // Build and return the state
     return new_state(dictator_public_key, predecessor_timestamp, nb_account_bytes, accounts);

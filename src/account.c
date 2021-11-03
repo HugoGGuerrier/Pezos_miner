@@ -81,17 +81,24 @@ Account_t decode_account(char *data) {
     return new_account(user_public_key, level_pez, timestamp_pez, operations_hash_pez, context_hash_pez, signature_pez);
 }
 
-Accounts_t decode_accounts(char *data, unsigned int nb_accounts) {
-    Accounts_t accounts = NULL;
+Accounts_t decode_accounts(char *data, size_t size) {
+    // Prepare the result and the cursor
+    size_t cursor = 0;
+    Accounts_t res = NULL;
 
-    for(int i = 0 ; i < nb_accounts ; i++) {
+    while (cursor < size){
+        // Decode the first account
         Account_t account = decode_account(data);
 
-        // Add the account in the account list
-        Accounts_t accounts_tmp = new_accounts(account, accounts);
-        accounts = accounts_tmp;
+        // Add it to the list
+        Accounts_t tmp = new_accounts(account, res);
+        res = tmp;
+
+        // Increment the data and the cursor
+        cursor += ACCOUNT_CODE_SIZE;
         data += ACCOUNT_CODE_SIZE;
     }
-
-    return accounts;
+    
+    // Return the result
+    return res;
 }

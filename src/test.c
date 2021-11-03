@@ -3,15 +3,43 @@
 #include <stdio.h>
 
 #include "test.h"
+#include "signature.h"
 #include "account.h"
 #include "block.h"
 #include "utils.h"
+#include "operation.h"
 #include "state.h"
 
+#include "ed25519.h"
 
-void test_read_hex_string(){
+
+void test_read_hex_string() {
     char *test = read_hex_string("3412");
     assert(*((int *) test) == 4660);
+    printf("===> OK\n");
+}
+
+
+void test_signature() {
+    // Get the public key and compare it
+
+    // Hard verify
+    unsigned char seed[32];
+    unsigned char signature[64];
+    unsigned char public_key[32];
+    unsigned char private_key[64];
+
+    ed25519_create_seed(seed);
+    ed25519_create_keypair(public_key, private_key, seed);
+
+    print_hex(public_key, 32, "\n");
+    print_hex(private_key, 64, "\n");
+
+    ed25519_sign(signature, "test", 4, public_key, private_key);
+    int res = ed25519_verify(signature, "test", 4, public_key);
+
+    assert(res != 0);
+
     printf("===> OK\n");
 }
 
@@ -110,12 +138,47 @@ void test_block() {
 
 void test_message() {
     
-    printf("===> OK\n");
+    printf("\n===> OK\n");
 }
 
 void test_operation() {
+    // Define example operations
+    Operation_t op_1 = new_bad_context(read_hex_string("46f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f"));
+    Operation_t op_2 = new_bad_timestamp(1024);
+    Operation_t op_3 = new_bad_operations(read_hex_string("e176367e487a576febd6fd9f53494191b55bb7b5f070d05200d6483aa817078f"));
+    Operation_t op_4 = new_bad_predecessor(read_hex_string("55900480c288c492b27be1b7a4fbbdd0317a0fd6c96087683c6477bdc08cd93c"));
+    Operation_t op_5 = new_bad_signature();
 
-    printf("===> OK\n");
+    // Print the operations
+    printf("Operations before encoding:\n");
+    print_op(op_1);
+    print_op(op_2);
+    print_op(op_3);
+    print_op(op_4);
+    print_op(op_5);
+
+    // Encode the operations
+    char *enc_1 = encode_operation(op_1);
+    char *enc_2 = encode_operation(op_2);
+    char *enc_3 = encode_operation(op_3);
+    char *enc_4 = encode_operation(op_4);
+    char *enc_5 = encode_operation(op_5);
+
+    print_hex(enc_1, OP_CODE_SIZE_MIN + op_1->data_size, "\n");
+    
+    // Free the memory
+    delete_operation(op_1);
+    delete_operation(op_2);
+    delete_operation(op_3);
+    delete_operation(op_4);
+    delete_operation(op_5);
+    free(enc_1);
+    free(enc_2);
+    free(enc_3);
+    free(enc_4);
+    free(enc_5);
+
+    printf("\n===> OK\n");
 }
 
 void test_state() {
@@ -159,7 +222,7 @@ void test_state() {
     free(encoded);
     free(encoded_expect);
 
-    printf("===> OK\n");
+    printf("\n===> OK\n");
 }
 
 void run_tests() {
@@ -169,6 +232,9 @@ void run_tests() {
 
     printf("\n========== Test Read Hex String ==========\n\n");
     test_read_hex_string();
+    
+    printf("\n========== Test Signature ==========\n\n");
+    test_signature();
 
     printf("\n========== Test Account ==========\n\n");
     test_account();

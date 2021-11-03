@@ -123,7 +123,7 @@ Message_t new_get_state_message(unsigned int level) {
 
 Message_t new_inject_operation_message(Operation_t operation) {
     char *data = encode_operation(operation);
-    return new_message(INJECT_OPERATION, OP_TAG_SIZE + operation->data_size + KEY_SIZE + SIG_SIZE, data);
+    return new_message(INJECT_OPERATION, OP_CODE_SIZE_MIN + operation->data_size, data);
 }
 
 
@@ -159,7 +159,7 @@ char *encode_message(Message_t message) {
     data_ptr += MSG_SIZE_SIZE;
 
     // Add the message tag
-    unsigned short tag = msg_type_to_tag(message->tag);
+    unsigned short tag = msg_type_to_tag(message->msg_type);
     memcpy(data_ptr, &tag, MSG_TAG_SIZE);
     data_ptr += MSG_TAG_SIZE;
 

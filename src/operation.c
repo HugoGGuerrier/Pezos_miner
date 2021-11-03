@@ -86,6 +86,8 @@ void sign_operation(Operation_t op) {
     char *signature = (char *) malloc(SIG_SIZE);
     sign(signature, to_sign, HASH_SIZE);
 
+    printf("VERIFYING : %d\n", verify(signature, to_sign, HASH_SIZE, get_public_key_copy()));
+
     // Put it in the operation
     op->signature = signature;
 }
@@ -152,7 +154,7 @@ Operation_t new_bad_signature() {
 
 char *encode_operation(Operation_t operation) {
     // Prepare the result
-    char *res = (char *) malloc(OP_TAG_SIZE + operation->data_size + KEY_SIZE + SIG_SIZE);
+    char *res = (char *) malloc(OP_CODE_SIZE_MIN + operation->data_size);
     char *ptr = res;
 
     // Prepare the operation type
@@ -249,7 +251,8 @@ Operations_t decode_operations(char *data, size_t size) {
         res = tmp;
 
         // Increment data and cursor
-        cursor, data += OP_TAG_SIZE + op->data_size + KEY_SIZE + SIG_SIZE;
+        cursor += OP_TAG_SIZE + op->data_size + KEY_SIZE + SIG_SIZE;
+        data += OP_TAG_SIZE + op->data_size + KEY_SIZE + SIG_SIZE;
     }
 
     // Return the result
@@ -258,7 +261,6 @@ Operations_t decode_operations(char *data, size_t size) {
 
 
 // ----- Utils functions -----
-
 
 char *op_type_str(const Operation_Type_t type) {
     switch (type) {

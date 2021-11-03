@@ -4,13 +4,15 @@
 #include <byteswap.h>
 
 #include "utils.h"
+#include "message.h"
+#include "operation.h"
 
 
 // --- Message functions
 
 Message_t new_message(Message_Type_t tag, unsigned short data_size, char *data) {
     Message_t res = (Message_t)malloc(sizeof(struct message));
-    res->tag = tag;
+    res->msg_type = tag;
     res->data_size = data_size;
     res->data = data;
     return res;
@@ -142,7 +144,16 @@ void delete_accounts(Accounts_t accounts) {
 // --- Printing functions
 
 void print_op(Operation_t op) {
-    
+    printf("--- OPERATION ---\n");
+    printf("op_type : %s\n", op_type_str(op->op_type));
+    printf("data_size : %hu\n", op->data_size);
+    printf("data : ");
+    print_hex(op->data, op->data_size, "\n");
+    printf("user_key : ");
+    print_hex(op->user_key, KEY_SIZE, "\n");
+    printf("signature : ");
+    print_hex(op->signature, SIG_SIZE, "\n");
+    printf("-----------------\n");
 }
 
 void print_block(Block_t block) {
@@ -173,7 +184,7 @@ void print_account(Account_t account) {
 
 void print_message(Message_t message) {
     printf("--- MESSAGE ---\n");
-    // TODO: faire print enum
+    printf("message_type : %s\n", msg_type_str(message->msg_type));
     printf("data_size : %hu\n", message->data_size);
     printf("message : ");
     print_hex(message->data, message->data_size, "\n");
@@ -181,7 +192,7 @@ void print_message(Message_t message) {
 }
 
 void print_state(State_t state) {
-    printf("--- STATE ---\n");
+    printf("---- STATE ----\n");
     printf("dictator_public_key : ");
     print_hex(state->dictator_public_key, KEY_SIZE, "\n");
     printf("predecessor_timestamp : %lu\n", state->predecessor_timestamp);
@@ -201,7 +212,7 @@ void print_hex(char *thing, size_t size, const char *end) {
     for (size_t i = 0; i < size; i++) {
         printf("%02x", thing[i] & 0xff);
     }
-    printf(end);
+    printf("%s", end);
 }
 
 // --- Miscallenous functions
@@ -233,7 +244,7 @@ char *read_hex_string(char *hex_str) {
     char *pos = hex_str;
 
     // One byte is represented by two hexadecimal chars
-    char *res = (char *)malloc(hex_str_len / 2);
+    char *res = (char *) malloc(hex_str_len / 2);
 
     // Iterate pairs on the hexa string
     for (int i = 0; i < hex_str_len / 2; i++) {
@@ -246,7 +257,7 @@ char *read_hex_string(char *hex_str) {
 }
 
 char *get_public_key_copy() {
-    char *res = (char *)malloc(KEY_SIZE);
+    char *res = (char *) malloc(KEY_SIZE);
     char pk[KEY_SIZE] = PUBLIC_KEY;
     memcpy(res, pk, KEY_SIZE);
 
