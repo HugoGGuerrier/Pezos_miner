@@ -39,10 +39,25 @@ struct operations
 };
 
 
-// ----- Operation specific creation functions ------
+// ----- Memory manipulation functions -----
+
+// Create a new operation
+Operation_t new_operation(Operation_Type_t op_type, unsigned short data_size, char *data, char *user_key, char *sig);
+
+// Delete an operation
+void delete_operation(Operation_t operation);
+
+// Create a new operation list
+Operations_t new_operations(Operation_t head, Operations_t tail);
+
+// Delete recursively an operation list
+void delete_operations(Operations_t operations);
 
 // Create a new bad predecessor operation with the correct hash
 Operation_t new_bad_predecessor(char *pred_hash);
+
+
+// ----- Operation specific creation functions ------
 
 // Create a new bad timestamp operation with the correct timestamp
 Operation_t new_bad_timestamp(unsigned long timestamp);
@@ -73,5 +88,8 @@ Operations_t decode_operations(char *data, size_t data_size);
 
 // Get the string for an operation type
 char *op_type_str(const Operation_Type_t type);
+
+// Print an operation
+void print_op(Operation_t op);
 
 #endif
