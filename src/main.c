@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "main.h"
+#include "client.h"
 #include "test.h"
 
 int main(int argc, const char *argv[]) {

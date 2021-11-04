@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "block.h"
@@ -125,7 +126,6 @@ char *ops_hash(Operations_t ops) {
             memcpy(tmp_buf + HASH_SIZE, head_hash, HASH_SIZE);
             
             // Hash the concatenation
-            blake2b((void *) res_buf, 32, (void *) tmp_buf, 64, NULL, 0);
             hash(tmp_buf, HASH_SIZE * 2, res_buf);
 
             // Free the memory

@@ -13,7 +13,6 @@
 
 // --- Function declaration
 
-int read_timeout(int file_desc, void *buffer, size_t size, int *timeout);
 int auth();
 int client_loop();
 int test_connection();
@@ -33,7 +32,7 @@ int start_client(const char *addr, unsigned short port) {
     // Create the socket
     sock_id = socket(AF_INET, SOCK_STREAM, 0);
     if(sock_id == -1) {
-        printf("Cannot create the socket...\n");
+        printf("ERROR : Cannot create the socket\n");
         return 1;
     }
     printf("Socket created !\n");
@@ -58,7 +57,7 @@ int start_client(const char *addr, unsigned short port) {
 
     // Connect to the server
     if(connect(sock_id, (struct sockaddr *)&server_address, sizeof(server_address)) != 0) {
-        printf("Cannot connect to the server...\n");
+        printf("ERROR : Cannot connect to the server\n");
         return 1;
     }
     printf("Connected to the dictator server !\n");
@@ -66,7 +65,7 @@ int start_client(const char *addr, unsigned short port) {
     // Authetificate the client
     printf("Try authentification process...\n");
     if(auth() != 0) {
-        printf("Authetification failed...\n");
+        printf("ERROR : Authetification failed\n");
         return 1;
     }
     printf("Authentification success !\n");
@@ -77,16 +76,17 @@ int start_client(const char *addr, unsigned short port) {
 }
 
 int auth() {
-    // Prepare working variables
-    int tmp;
-
     // Read the random seed from the server
     if(read(sock_id, buff, BUFF_SIZE) == -1) {
-        printf("Error in authentification : Cannot read the random seed from the server\n");
+        printf("ERROR : Cannot read the random seed from the server\n");
         return 1;
     }
     char rand_seed[RAND_SEED_SIZE];
     memcpy(&rand_seed, &buff, RAND_SEED_SIZE);
+
+    // Print the random seed
+    printf("Random seed = ");
+    print_hex(rand_seed, RAND_SEED_SIZE, "\n");
 
     // Get the public key
     char public_key[KEY_SIZE] = PUBLIC_KEY;
@@ -94,11 +94,14 @@ int auth() {
     // Prepare the message to send to the server
     char public_key_msg[2 + KEY_SIZE];
     public_key_msg[1] = KEY_SIZE;
-    memcpy(public_key_msg[2], public_key, KEY_SIZE);
+    memcpy(public_key_msg + 2, public_key, KEY_SIZE);
+
+    // Print the sending of the public key
+    printf("Sending the public key...\n");
 
     // Send the key to the server
     if(write(sock_id, &public_key, KEY_SIZE) == -1) {
-        printf("Error in authentification : Cannot send the public key to the server\n");
+        printf("ERROR : Cannot send the public key to the server\n");
         return 1;
     }
 
@@ -107,19 +110,27 @@ int auth() {
     hash(rand_seed, RAND_SEED_SIZE, rand_hash);
 
     // Prepare the message for the signed hashed random seed and its size
-    char rand_hash_sign[64 + 2];
-    rand_hash_sign[1] = 64;
-    sign(rand_hash_sign[2], rand_hash, HASH_SIZE);
+    char rand_hash_sign[2 + SIG_SIZE];
+    rand_hash_sign[1] = SIG_SIZE;
+    sign(rand_hash_sign + 2, rand_hash, HASH_SIZE);
+
+    // Print the hash signature and the sending action
+    printf("Random seed hash signature message = ");
+    print_hex(rand_hash_sign, 2 + SIG_SIZE, "\n");
+    printf("Sending the randome seed hash signature...\n");
 
     // Send the signature to the server
     if(write(sock_id, rand_hash_sign, 64) == -1) {
-        printf("Error in authentification : Cannot send the random seed hash signature to the server\n");
+        printf("ERROR : Cannot send the random seed hash signature to the server\n");
         return 1;
     }
 
+    // Print the testing connection
+    printf("Testing connection...\n");
+
     // Test the connection
     if(test_connection() != 0) {
-        printf("Error in authentification : Server didn't accept the connection\n");
+        printf("ERROR : Server didn't accept the connection\n");
         return 1;
     }
 
