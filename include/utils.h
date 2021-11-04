@@ -1,12 +1,11 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "account.h"
 #include "message.h"
 #include "operation.h"
-#include "account.h"
 #include "block.h"
 #include "state.h"
-
 
 
 // ----- Hard define the public and private key (Not very secure...) -----

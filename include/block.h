@@ -1,7 +1,8 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "utils.h"
+#include "state.h"
+#include "operation.h"
 
 #define BLOCK_TIME 600
 #define BLOCK_CODE_SIZE (SIG_SIZE + HASH_SIZE * 3 + 8 + 4)

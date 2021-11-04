@@ -3,10 +3,10 @@
 #include <string.h>
 
 #include "block.h"
-#include "client.h"
 #include "message.h"
 #include "operation.h"
 #include "state.h"
+
 #include "signature.h"
 #include "hash.h"
 #include "utils.h"

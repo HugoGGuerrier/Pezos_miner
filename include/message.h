@@ -1,7 +1,9 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-#include "utils.h"
+#include "block.h"
+#include "operation.h"
+#include "state.h"
 
 #define MSG_SIZE_SIZE 2
 #define MSG_TAG_SIZE 2

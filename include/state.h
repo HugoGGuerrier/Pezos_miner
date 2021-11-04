@@ -1,7 +1,7 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include "utils.h"
+#include "account.h"
 
 #define STATE_CODE_SIZE_MIN (KEY_SIZE + sizeof(long) + sizeof(int))
 
