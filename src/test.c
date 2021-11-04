@@ -34,7 +34,11 @@ void test_signature() {
     assert(compare_data(expected_pub, KEY_SIZE, real_pub, KEY_SIZE));
 
     // Test the sign and unsign
-    
+    char signature[64];
+    char *pub_key = get_public_key_copy();
+    sign(signature, "test", 5);
+    assert(verify(signature, "test", 5, pub_key) == 1);
+    free(pub_key);
 
     printf("===> OK\n");
 }
