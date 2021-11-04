@@ -20,67 +20,7 @@
 // ----- Utils function definitions -----
 
 
-// --- Data creation and deletion functions
-
-// Create a new message
-Message_t new_message(Message_Type_t tag, unsigned short data_size, char *data);
-
-// Delete a message
-void delete_message(Message_t message);
-
-// Create a new operation
-Operation_t new_operation(Operation_Type_t op_type, unsigned short data_size, char *data, char *user_key, char *sig);
-
-// Delete an operation
-void delete_operation(Operation_t operation);
-
-// Create a new operaiton list
-Operations_t new_operations(Operation_t head, Operations_t tail);
-
-// Delete recursively an operation list
-void delete_operations(Operations_t operations);
-
-// Create a new block from the given data
-Block_t new_block(unsigned int level, char *pred, unsigned long time, char *ope_h, char *ctx_h, char *sig);
-
-// Delete a block
-void delete_block(Block_t block);
-
-// Create a new state from the given data
-State_t new_state(char *dict_pub_key, unsigned long pred_time, unsigned long nb_bytes, Accounts_t accounts);
-
-// Delete a state
-void delete_state(State_t state);
-
-// Create a new account with the given data
-Account_t new_account(char *user_pub_key, unsigned int lev_pez, unsigned int time_pez, unsigned int op_h_pez, unsigned int ctx_h_pez, unsigned int sig_pez);
-
-// Delete an account
-void delete_account(Account_t account);
-
-// Create a new accout list
-Accounts_t new_accounts(Account_t head, Accounts_t tail);
-
-// Delete recursivly an account list
-void delete_accounts(Accounts_t accounts);
-
-
 // --- Printing functions
-
-// Print an operation
-void print_op(Operation_t op);
-
-// Print a block
-void print_block(Block_t block);
-
-// Print an account
-void print_account(Account_t account);
-
-// Print a message
-void print_message(Message_t message);
-
-// Print a state
-void print_state(State_t state);
 
 // Print a data in hexadecimal form
 void print_hex(char *thing, size_t size, const char *end);

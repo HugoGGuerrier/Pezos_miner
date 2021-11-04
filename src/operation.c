@@ -90,6 +90,42 @@ void sign_operation(Operation_t op) {
 }
 
 
+// ----- Memory manipulation functions -----
+
+Operation_t new_operation(Operation_Type_t op_type, unsigned short data_size, char *data, char *user_key, char *sig) {
+    Operation_t res = (Operation_t)malloc(sizeof(struct operation));
+    res->op_type = op_type;
+    res->data_size = data_size;
+    res->data = data;
+    res->user_key = user_key;
+    res->signature = sig;
+    return res;
+}
+
+void delete_operation(Operation_t operation) {
+    if (operation->data != NULL) {
+        free(operation->data);
+    }
+    free(operation->user_key);
+    free(operation->signature);
+    free(operation);
+}
+
+Operations_t new_operations(Operation_t head, Operations_t tail) {
+    Operations_t res = (Operations_t)malloc(sizeof(struct operations));
+    res->head = head;
+    res->tail = tail;
+    return res;
+}
+
+void delete_operations(Operations_t operations) {
+    if (operations != NULL) {
+        delete_operations(operations->tail);
+        delete_operation(operations->head);
+    }
+}
+
+
 // ----- Operation specific creation functions ------
 
 Operation_t new_bad_predecessor(char *pred_hash) {
@@ -283,4 +319,20 @@ char *op_type_str(const Operation_Type_t type) {
         printf("Error in operation encoding : Unknown operation tag\n");
         exit(1);
     }
+}
+
+
+// ----- Utils functions -----
+
+void print_op(Operation_t op) {
+    printf("--- OPERATION ---\n");
+    printf("op_type : %s\n", op_type_str(op->op_type));
+    printf("data_size : %hu\n", op->data_size);
+    printf("data : ");
+    print_hex(op->data, op->data_size, "\n");
+    printf("user_key : ");
+    print_hex(op->user_key, KEY_SIZE, "\n");
+    printf("signature : ");
+    print_hex(op->signature, SIG_SIZE, "\n");
+    printf("-----------------\n");
 }

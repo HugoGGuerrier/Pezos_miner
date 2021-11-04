@@ -12,6 +12,28 @@
 #include "utils.h"
 
 
+// ----- Memory manipulation funuctions
+
+Block_t new_block(unsigned int level, char *pred, unsigned long time, char *ope_h, char *ctx_h, char *sig) {
+    Block_t res = (Block_t)malloc(sizeof(struct block));
+    res->level = level;
+    res->predecessor = pred;
+    res->timestamp = time;
+    res->operations_hash = ope_h;
+    res->context_hash = ctx_h;
+    res->signature = sig;
+    return res;
+}
+
+void delete_block(Block_t block) {
+    free(block->predecessor);
+    free(block->operations_hash);
+    free(block->context_hash);
+    free(block->signature);
+    free(block);
+}
+
+
 // ----- Block encoding and decoding functions -----
 
 char *encode_block(Block_t block) {
@@ -189,4 +211,22 @@ Operation_t verify_bloc(Block_t b, Block_t pred, State_t state, Operations_t ops
     // We do it last as it should be the most ressce-consumming verification
     char *ops_h = ops_hash(ops);
     return new_bad_operations(ops_h);
+}
+
+
+// ----- Utils functions -----
+
+void print_block(Block_t block) {
+    printf("--- BLOCK ---\n");
+    printf("level : %u\n", block->level);
+    printf("predecessor : ");
+    print_hex(block->predecessor, HASH_SIZE, "\n");
+    printf("timestamp : %lu\n", block->timestamp);
+    printf("operations hash : ");
+    print_hex(block->operations_hash, HASH_SIZE, "\n");
+    printf("context hash : ");
+    print_hex(block->context_hash, HASH_SIZE, "\n");
+    printf("signature : ");
+    print_hex(block->signature, SIG_SIZE, "\n");
+    printf("-------------\n");
 }

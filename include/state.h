@@ -20,6 +20,15 @@ struct state
 };
 
 
+// ----- Memory manipulation functions -----
+
+// Create a new state from the given data
+State_t new_state(char *dict_pub_key, unsigned long pred_time, unsigned long nb_bytes, Accounts_t accounts);
+
+// Delete a state
+void delete_state(State_t state);
+
+
 // ----- State encoding and decoding functions -----
 
 // Take a state and encode it as a byte sequence (could reverse order of the accounts in the result)
@@ -27,5 +36,11 @@ char *encode_state(State_t state);
 
 // Take a byte sequence and decode it as a state
 State_t decode_state(char *data);
+
+
+// ----- Utils functions -----
+
+// Print a state
+void print_state(State_t state);
 
 #endif

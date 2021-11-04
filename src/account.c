@@ -6,6 +6,41 @@
 #include "utils.h"
 
 
+// ----- Memory manipulation functions -----
+
+Account_t new_account(char *user_pub_key, unsigned int lev_pez, unsigned int time_pez, unsigned int op_h_pez, unsigned int ctx_h_pez, unsigned int sig_pez) {
+    Account_t res = (Account_t)malloc(sizeof(struct account));
+    res->user_public_key = user_pub_key;
+    res->level_pez = lev_pez;
+    res->timestamp_pez = time_pez;
+    res->operations_hash_pez = op_h_pez;
+    res->context_hash_pez = ctx_h_pez;
+    res->signature_pez = sig_pez;
+    return res;
+}
+
+void delete_account(Account_t account) {
+    free(account->user_public_key);
+    free(account);
+}
+
+Accounts_t new_accounts(Account_t head, Accounts_t tail) {
+    Accounts_t res = (Accounts_t)malloc(sizeof(struct accounts));
+    res->head = head;
+    res->tail = tail;
+    return res;
+}
+
+void delete_accounts(Accounts_t accounts) {
+    if (accounts != NULL) {
+        delete_accounts(accounts->tail);
+        delete_account(accounts->head);
+    }
+}
+
+
+// ----- Accounts encoding and decoding functions -----
+
 char *encode_account(Account_t account) {
     // Prepare the result encoded data
     char *data_res = (char *) malloc(ACCOUNT_CODE_SIZE);
@@ -105,4 +140,18 @@ Accounts_t decode_accounts(char *data, size_t size) {
     
     // Return the result
     return res;
+}
+
+
+// ----- Utils functions -----
+
+void print_account(Account_t account) {
+    printf("--- ACCOUNT ---\n");
+    printf("user public key : ");
+    print_hex(account->user_public_key, HASH_SIZE, "\n");
+    printf("level_pez : %u\n", account->level_pez);
+    printf("operations hash_pez : %u\n", account->operations_hash_pez);
+    printf("context_hash_pez : %u\n", account->context_hash_pez);
+    printf("signature_pez : %u\n", account->signature_pez);
+    printf("---------------\n");
 }

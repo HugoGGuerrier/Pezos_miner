@@ -84,6 +84,21 @@ Message_Type_t tag_to_msg_type(unsigned short tag) {
 
 // ----- Message specific creation functions -----
 
+Message_t new_message(Message_Type_t tag, unsigned short data_size, char *data) {
+    Message_t res = (Message_t)malloc(sizeof(struct message));
+    res->msg_type = tag;
+    res->data_size = data_size;
+    res->data = data;
+    return res;
+}
+
+void delete_message(Message_t message) {
+    if (message->data != NULL) {
+        free(message->data);
+    }
+    free(message);
+}
+
 Message_t new_get_current_head_message() {
     Message_t res = new_message(GET_CURRENT_HEAD, 0, NULL);
     return res;
@@ -231,4 +246,13 @@ char *msg_type_str(const Message_Type_t type) {
         printf("Error in message encoding : Unknown message type\n");
         exit(1);
     }
+}
+
+void print_message(Message_t message) {
+    printf("--- MESSAGE ---\n");
+    printf("message_type : %s\n", msg_type_str(message->msg_type));
+    printf("data_size : %hu\n", message->data_size);
+    printf("message : ");
+    print_hex(message->data, message->data_size, "\n");
+    printf("---------------\n");
 }

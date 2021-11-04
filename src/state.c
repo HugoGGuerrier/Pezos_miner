@@ -7,6 +7,26 @@
 #include "utils.h"
 
 
+// ----- Memory manipulation functions -----
+
+State_t new_state(char *dict_pub_key, unsigned long pred_time, unsigned long nb_bytes, Accounts_t accounts) {
+    State_t res = (State_t)malloc(sizeof(struct state));
+    res->dictator_public_key = dict_pub_key;
+    res->predecessor_timestamp = pred_time;
+    res->nb_account_bytes = nb_bytes;
+    res->accounts = accounts;
+    return res;
+}
+
+void delete_state(State_t state) {
+    free(state->dictator_public_key);
+    delete_accounts(state->accounts);
+    free(state);
+}
+
+
+// ----- States encoding and decoding functions -----
+
 char *encode_state(State_t state) {
     // Prepare the result encoded data
     char *data_res = (char *) malloc(STATE_CODE_SIZE_MIN + state->nb_account_bytes);
@@ -65,4 +85,24 @@ State_t decode_state(char *data) {
 
     // Build and return the state
     return new_state(dictator_public_key, predecessor_timestamp, nb_account_bytes, accounts);
+}
+
+
+// ----- Utils functions -----
+
+void print_state(State_t state) {
+    printf("---- STATE ----\n");
+    printf("dictator_public_key : ");
+    print_hex(state->dictator_public_key, KEY_SIZE, "\n");
+    printf("predecessor_timestamp : %lu\n", state->predecessor_timestamp);
+    printf("nb_accounts_bytes : %u\n", state->nb_account_bytes);
+    printf("accounts : [\n\n");
+    Accounts_t tmp = state->accounts;
+    while (tmp != NULL) {
+        print_account(tmp->head);
+        printf("\n");
+        tmp = tmp->tail;
+    }
+    printf("]\n");
+    printf("---------------\n");
 }

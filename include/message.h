@@ -37,6 +37,15 @@ struct message
 };
 
 
+// --- Data creation and deletion functions
+
+// Create a new message
+Message_t new_message(Message_Type_t tag, unsigned short data_size, char *data);
+
+// Delete a message
+void delete_message(Message_t message);
+
+
 // ----- Message specific creation functions -----
 
 // Create a GET CURRENT HEAD message
@@ -83,5 +92,8 @@ Message_t decode_message(char *data);
 
 // Get the string for a message type
 char *msg_type_str(const Message_Type_t type);
+
+// Print a message
+void print_message(Message_t message);
 
 #endif

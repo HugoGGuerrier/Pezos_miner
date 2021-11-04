@@ -23,6 +23,14 @@ struct block
     char *signature;
 };
 
+// ----- Memory manipulation functions -----
+
+// Create a new block from the given data
+Block_t new_block(unsigned int level, char *pred, unsigned long time, char *ope_h, char *ctx_h, char *sig);
+
+// Delete a block
+void delete_block(Block_t block);
+
 
 // ----- Block encoding and decoding functions -----
 
@@ -37,5 +45,11 @@ Block_t decode_block(char *data);
 
 // Verify a block correctness
 Operation_t verify_bloc(Block_t block, Block_t pred, State_t state, Operations_t ops);
+
+
+// ----- Utils functions -----
+
+// Print a block
+void print_block(Block_t block);
 
 #endif
