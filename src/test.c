@@ -5,11 +5,13 @@
 
 #include "test.h"
 #include "signature.h"
+#include "hash.h"
 #include "account.h"
 #include "block.h"
-#include "utils.h"
+#include "message.h"
 #include "operation.h"
 #include "state.h"
+#include "utils.h"
 
 #include "ed25519.h"
 
@@ -36,7 +38,7 @@ void test_hash() {
 
 
 void test_account() {
-    // Dummy account example
+    // Account example
     char *user_public_key = read_hex_string("aca76354de343ef09385e263fb59561855d3cbf167961c6955624d91aa7eecf5");
     unsigned int level_pez = 1;
     unsigned int timestamp_pez = 2;
@@ -128,6 +130,73 @@ void test_block() {
 }
 
 void test_message() {
+    // Create example messages
+    Message_t msg_1 = new_get_block_message(1024);
+    Message_t msg_2 = new_get_current_head_message();
+    Message_t msg_3 = new_get_block_operations_message(2015);
+    Message_t msg_4 = new_get_state_message(4242);
+
+    Operation_t op = new_bad_timestamp(2048);
+    Message_t msg_5 = new_inject_operation_message(op);
+
+    // Print the messages
+    printf("Messages before encoding:\n");
+    print_message(msg_1);
+    print_message(msg_2);
+    print_message(msg_3);
+    print_message(msg_4);
+    print_message(msg_5);
+
+    // Encode the messages
+    char *enc_1 = encode_message(msg_1);
+    char *enc_2 = encode_message(msg_2);
+    char *enc_3 = encode_message(msg_3);
+    char *enc_4 = encode_message(msg_4);
+    char *enc_5 = encode_message(msg_5);
+    
+    // Decode messages
+    Message_t dec_1 = decode_message(enc_1);
+    Message_t dec_2 = decode_message(enc_2);
+    Message_t dec_3 = decode_message(enc_3);
+    Message_t dec_4 = decode_message(enc_4);
+    Message_t dec_5 = decode_message(enc_5);
+
+    // Check the messages data
+    assert(msg_1->msg_type == dec_1->msg_type);
+    assert(msg_2->msg_type == dec_2->msg_type);
+    assert(msg_3->msg_type == dec_3->msg_type);
+    assert(msg_4->msg_type == dec_4->msg_type);
+    assert(msg_5->msg_type == dec_5->msg_type);
+    
+    assert(msg_1->data_size == dec_1->data_size);
+    assert(msg_2->data_size == dec_2->data_size);
+    assert(msg_3->data_size == dec_3->data_size);
+    assert(msg_4->data_size == dec_4->data_size);
+    assert(msg_5->data_size == dec_5->data_size);
+
+    assert(compare_data(msg_1->data, msg_1->data_size, dec_1->data, dec_1->data_size));
+    assert(compare_data(msg_2->data, msg_2->data_size, dec_2->data, dec_2->data_size));
+    assert(compare_data(msg_3->data, msg_3->data_size, dec_3->data, dec_3->data_size));
+    assert(compare_data(msg_4->data, msg_4->data_size, dec_4->data, dec_4->data_size));
+    assert(compare_data(msg_5->data, msg_5->data_size, dec_5->data, dec_5->data_size));
+
+    // Free the memory
+    delete_message(msg_1);
+    delete_message(msg_2);
+    delete_message(msg_3);
+    delete_message(msg_4);
+    delete_message(msg_5);
+    delete_message(dec_1);
+    delete_message(dec_2);
+    delete_message(dec_3);
+    delete_message(dec_4);
+    delete_message(dec_5);
+    delete_operation(op);
+    free(enc_1);
+    free(enc_2);
+    free(enc_3);
+    free(enc_4);
+    free(enc_5);
     
     printf("\n===> OK\n");
 }
@@ -156,42 +225,42 @@ void test_operation() {
     char *enc_5 = encode_operation(op_5);
 
     // Decode the operations
-    Operation_t decoded_1 = decode_operation(enc_1);
-    Operation_t decoded_2 = decode_operation(enc_2);
-    Operation_t decoded_3 = decode_operation(enc_3);
-    Operation_t decoded_4 = decode_operation(enc_4);
-    Operation_t decoded_5 = decode_operation(enc_5);
+    Operation_t dec_1 = decode_operation(enc_1);
+    Operation_t dec_2 = decode_operation(enc_2);
+    Operation_t dec_3 = decode_operation(enc_3);
+    Operation_t dec_4 = decode_operation(enc_4);
+    Operation_t dec_5 = decode_operation(enc_5);
 
     // Check the operations data
-    assert(op_1->op_type == decoded_1->op_type);
-    assert(op_2->op_type == decoded_2->op_type);
-    assert(op_3->op_type == decoded_3->op_type);
-    assert(op_4->op_type == decoded_4->op_type);
-    assert(op_5->op_type == decoded_5->op_type);
+    assert(op_1->op_type == dec_1->op_type);
+    assert(op_2->op_type == dec_2->op_type);
+    assert(op_3->op_type == dec_3->op_type);
+    assert(op_4->op_type == dec_4->op_type);
+    assert(op_5->op_type == dec_5->op_type);
 
-    assert(op_1->data_size == decoded_1->data_size);
-    assert(op_2->data_size == decoded_2->data_size);
-    assert(op_3->data_size == decoded_3->data_size);
-    assert(op_4->data_size == decoded_4->data_size);
-    assert(op_5->data_size == decoded_5->data_size);
+    assert(op_1->data_size == dec_1->data_size);
+    assert(op_2->data_size == dec_2->data_size);
+    assert(op_3->data_size == dec_3->data_size);
+    assert(op_4->data_size == dec_4->data_size);
+    assert(op_5->data_size == dec_5->data_size);
 
-    assert(compare_data(op_1->data, op_1->data_size, decoded_1->data, decoded_1->data_size));
-    assert(compare_data(op_2->data, op_2->data_size, decoded_2->data, decoded_2->data_size));
-    assert(compare_data(op_3->data, op_3->data_size, decoded_3->data, decoded_3->data_size));
-    assert(compare_data(op_4->data, op_4->data_size, decoded_4->data, decoded_4->data_size));
-    assert(compare_data(op_5->data, op_5->data_size, decoded_5->data, decoded_5->data_size));
+    assert(compare_data(op_1->data, op_1->data_size, dec_1->data, dec_1->data_size));
+    assert(compare_data(op_2->data, op_2->data_size, dec_2->data, dec_2->data_size));
+    assert(compare_data(op_3->data, op_3->data_size, dec_3->data, dec_3->data_size));
+    assert(compare_data(op_4->data, op_4->data_size, dec_4->data, dec_4->data_size));
+    assert(compare_data(op_5->data, op_5->data_size, dec_5->data, dec_5->data_size));
 
-    assert(compare_data(op_1->signature, SIG_SIZE, decoded_1->signature, SIG_SIZE));
-    assert(compare_data(op_2->signature, SIG_SIZE, decoded_2->signature, SIG_SIZE));
-    assert(compare_data(op_3->signature, SIG_SIZE, decoded_3->signature, SIG_SIZE));
-    assert(compare_data(op_4->signature, SIG_SIZE, decoded_4->signature, SIG_SIZE));
-    assert(compare_data(op_5->signature, SIG_SIZE, decoded_5->signature, SIG_SIZE));
+    assert(compare_data(op_1->signature, SIG_SIZE, dec_1->signature, SIG_SIZE));
+    assert(compare_data(op_2->signature, SIG_SIZE, dec_2->signature, SIG_SIZE));
+    assert(compare_data(op_3->signature, SIG_SIZE, dec_3->signature, SIG_SIZE));
+    assert(compare_data(op_4->signature, SIG_SIZE, dec_4->signature, SIG_SIZE));
+    assert(compare_data(op_5->signature, SIG_SIZE, dec_5->signature, SIG_SIZE));
 
-    assert(compare_data(op_1->user_key, KEY_SIZE, decoded_1->user_key, KEY_SIZE));
-    assert(compare_data(op_2->user_key, KEY_SIZE, decoded_2->user_key, KEY_SIZE));
-    assert(compare_data(op_3->user_key, KEY_SIZE, decoded_3->user_key, KEY_SIZE));
-    assert(compare_data(op_4->user_key, KEY_SIZE, decoded_4->user_key, KEY_SIZE));
-    assert(compare_data(op_5->user_key, KEY_SIZE, decoded_5->user_key, KEY_SIZE));
+    assert(compare_data(op_1->user_key, KEY_SIZE, dec_1->user_key, KEY_SIZE));
+    assert(compare_data(op_2->user_key, KEY_SIZE, dec_2->user_key, KEY_SIZE));
+    assert(compare_data(op_3->user_key, KEY_SIZE, dec_3->user_key, KEY_SIZE));
+    assert(compare_data(op_4->user_key, KEY_SIZE, dec_4->user_key, KEY_SIZE));
+    assert(compare_data(op_5->user_key, KEY_SIZE, dec_5->user_key, KEY_SIZE));
     
     // Test the operation list decoding
     char *operations_code = (char *) malloc(OP_CODE_SIZE_MIN * 3 + (op_1->data_size + op_2->data_size + op_3->data_size));
@@ -217,11 +286,11 @@ void test_operation() {
     delete_operation(op_3);
     delete_operation(op_4);
     delete_operation(op_5);
-    delete_operation(decoded_1);
-    delete_operation(decoded_2);
-    delete_operation(decoded_3);
-    delete_operation(decoded_4);
-    delete_operation(decoded_5);
+    delete_operation(dec_1);
+    delete_operation(dec_2);
+    delete_operation(dec_3);
+    delete_operation(dec_4);
+    delete_operation(dec_5);
     free(enc_1);
     free(enc_2);
     free(enc_3);

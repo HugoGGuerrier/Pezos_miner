@@ -3,6 +3,7 @@
 
 #define MSG_SIZE_SIZE 2
 #define MSG_TAG_SIZE 2
+#define MSG_CODE_SIZE_MIN (MSG_SIZE_SIZE + MSG_TAG_SIZE)
 
 #include "utils.h"
 
