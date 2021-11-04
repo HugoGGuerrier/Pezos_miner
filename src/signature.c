@@ -13,7 +13,7 @@ const char private_key[KEY_SIZE] = PRIVATE_KEY;
 // --- Functions to sign and verify
 
 void sign(char *signature, const char *data, size_t data_size) {
-    ed25519_sign(signature, data, data_size, private_key);
+    ed25519_sign(signature, data, data_size, private_key, public_key);
 }
 
 int verify(const char *signature, const char *data, size_t data_size, const char *key) {

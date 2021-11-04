@@ -33,7 +33,8 @@ void test_signature() {
     char *expected_pub = read_hex_string("aca76354de343ef09385e263fb59561855d3cbf167961c6955624d91aa7eecf5");
     assert(compare_data(expected_pub, KEY_SIZE, real_pub, KEY_SIZE));
 
-    // TODO
+    // Test the sign and unsign
+    
 
     printf("===> OK\n");
 }
