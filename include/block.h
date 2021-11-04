@@ -7,6 +7,22 @@
 #define BLOCK_CODE_SIZE (SIG_SIZE + HASH_SIZE * 3 + 8 + 4)
 
 
+// ----- Types and enum defining -----
+
+// --- Type that represents a block
+typedef struct block *Block_t;
+
+struct block
+{
+    unsigned int level;
+    char *predecessor;
+    unsigned long timestamp;
+    char *operations_hash;
+    char *context_hash;
+    char *signature;
+};
+
+
 // ----- Block encoding and decoding functions -----
 
 // Encode a block to a binary

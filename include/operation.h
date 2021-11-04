@@ -7,6 +7,40 @@
 #define OP_CODE_SIZE_MIN (OP_TAG_SIZE + SIG_SIZE + KEY_SIZE)
 
 
+// ----- Types and enum defining -----
+
+// --- Enumeration for all server operation type
+typedef enum
+{
+    BAD_PREDECESSOR,
+    BAD_TIMESTAMP,
+    BAD_OPERATIONS_HASH,
+    BAD_CONTEXT_HASH,
+    BAD_SIGNATURE,
+} Operation_Type_t;
+
+// --- Type that represent an operation
+typedef struct operation *Operation_t;
+
+struct operation
+{
+    Operation_Type_t op_type;
+    unsigned short data_size;
+    char *data;
+    char *user_key;
+    char *signature;
+};
+
+// --- Type thar represent an operations list
+typedef struct operations *Operations_t;
+
+struct operations
+{
+    Operation_t head;
+    Operations_t tail;
+};
+
+
 // ----- Operation specific creation functions ------
 
 // Create a new bad predecessor operation with the correct hash

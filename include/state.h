@@ -6,6 +6,19 @@
 #define STATE_CODE_SIZE_MIN (KEY_SIZE + sizeof(long) + sizeof(int))
 
 
+// ----- Types and enum defining -----
+
+// --- Type that represents a state
+typedef struct state *State_t;
+
+struct state
+{
+    char *dictator_public_key;
+    unsigned long predecessor_timestamp;
+    unsigned int nb_account_bytes;
+    Accounts_t accounts;
+};
+
 
 // ----- State encoding and decoding functions -----
 
