@@ -150,6 +150,7 @@ void print_account(Account_t account) {
     printf("user public key : ");
     print_hex(account->user_public_key, HASH_SIZE, "\n");
     printf("level_pez : %u\n", account->level_pez);
+    printf("timestamp_pez : %u\n", account->timestamp_pez);
     printf("operations hash_pez : %u\n", account->operations_hash_pez);
     printf("context_hash_pez : %u\n", account->context_hash_pez);
     printf("signature_pez : %u\n", account->signature_pez);

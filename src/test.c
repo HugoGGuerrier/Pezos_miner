@@ -4,12 +4,12 @@
 #include <assert.h>
 
 #include "test.h"
-#include "signature.h"
-#include "hash.h"
 #include "account.h"
 #include "block.h"
+#include "hash.h"
 #include "message.h"
 #include "operation.h"
+#include "signature.h"
 #include "state.h"
 #include "utils.h"
 
@@ -45,7 +45,11 @@ void test_signature() {
 
 
 void test_hash() {
-    // TODO
+    char *expected = read_hex_string("928b20366943e2afd11ebc0eae2e53a93bf177a4fcf35bcc64d503704e65e202");
+    char real[HASH_SIZE];
+    hash("test", 4, real);
+
+    assert(compare_data(expected, HASH_SIZE, real, HASH_SIZE));
 
     printf("===> OK\n");
 }
