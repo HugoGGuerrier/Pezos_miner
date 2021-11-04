@@ -11,7 +11,7 @@ OBJ=${SRC:src%.c=obj%.o}
 all: obj out obj/blake2b-ref.o $(EXEC)
 
 $(EXEC): $(OBJ) obj/blake2b-ref.o
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS) -led25519
 
 obj/blake2b-ref.o: src/blake2b-ref.c include/blake2.h include/blake2-impl.h
 	$(CC) -o $@ -c $< -I include $(CFLAGS)
