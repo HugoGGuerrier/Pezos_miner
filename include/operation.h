@@ -1,10 +1,10 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-#define OP_TAG_SIZE 2
-#define OP_CODE_SIZE_MIN (2 + SIG_SIZE + KEY_SIZE)
-
 #include "utils.h"
+
+#define OP_TAG_SIZE 2
+#define OP_CODE_SIZE_MIN (OP_TAG_SIZE + SIG_SIZE + KEY_SIZE)
 
 
 // ----- Operation specific creation functions ------

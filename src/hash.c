@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "hash.h"
 #include "blake2.h"
 

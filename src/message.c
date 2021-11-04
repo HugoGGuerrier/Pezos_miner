@@ -6,6 +6,7 @@
 #include "operation.h"
 #include "block.h"
 #include "state.h"
+#include "utils.h"
 
 
 // ----- Internal functions -----

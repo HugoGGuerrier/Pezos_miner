@@ -1,6 +1,8 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "account.h"
+#include "utils.h"
 
 
 char *encode_account(Account_t account) {

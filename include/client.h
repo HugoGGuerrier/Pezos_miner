@@ -1,11 +1,11 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include "utils.h"
+
 #define BUFF_SIZE 65536
 #define RAND_SEED_SIZE 24
 #define TIMEOUT_SEC 10
-
-#include "utils.h"
 
 
 // Start the client and do the login on the server

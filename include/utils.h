@@ -213,4 +213,7 @@ char *read_hex_string(char *hex_str);
 // Get a copy of the public key
 char *get_public_key_copy();
 
+// Get a copy of the private key
+char *get_private_key_copy();
+
 #endif

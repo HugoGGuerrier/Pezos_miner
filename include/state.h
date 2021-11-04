@@ -3,7 +3,8 @@
 
 #include "utils.h"
 
-#define STATE_CODE_SIZE_MIN (KEY_SIZE + 8 + 4)
+#define STATE_CODE_SIZE_MIN (KEY_SIZE + sizeof(long) + sizeof(int))
+
 
 
 // ----- State encoding and decoding functions -----

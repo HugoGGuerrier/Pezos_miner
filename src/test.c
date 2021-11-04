@@ -24,6 +24,15 @@ void test_read_hex_string() {
 
 
 void test_signature() {
+    // Test the key function
+    char *real_priv = get_private_key_copy();
+    char *expected_priv = read_hex_string("d9661d1a709518ef6213117508acbae0c9b04f338d017a28633bc4a1c15e1369");
+    assert(compare_data(expected_priv, KEY_SIZE, real_priv, KEY_SIZE));
+
+    char *real_pub = get_public_key_copy();
+    char *expected_pub = read_hex_string("aca76354de343ef09385e263fb59561855d3cbf167961c6955624d91aa7eecf5");
+    assert(compare_data(expected_pub, KEY_SIZE, real_pub, KEY_SIZE));
+
     // TODO
 
     printf("===> OK\n");

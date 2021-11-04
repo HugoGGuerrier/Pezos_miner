@@ -5,6 +5,7 @@
 #include "operation.h"
 #include "hash.h"
 #include "signature.h"
+#include "utils.h"
 
 
 // ----- Internal functions -----

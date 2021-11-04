@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "signature.h"
 #include "utils.h"
 #include "ed25519.h"

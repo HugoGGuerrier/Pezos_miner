@@ -3,6 +3,7 @@
 
 #include "state.h"
 #include "account.h"
+#include "utils.h"
 
 
 char *encode_state(State_t state) {

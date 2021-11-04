@@ -263,3 +263,11 @@ char *get_public_key_copy() {
 
     return res;
 }
+
+char *get_private_key_copy() {
+    char *res = (char *) malloc(KEY_SIZE);
+    char pk[KEY_SIZE] = PRIVATE_KEY;
+    memcpy(res, pk, KEY_SIZE);
+
+    return res;
+}
