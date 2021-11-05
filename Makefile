@@ -1,4 +1,4 @@
-CC=clang
+CC=gcc
 
 CFLAGS=-W -Wall -O3
 LDFLAGS=-Llib -led25519 -lpthread

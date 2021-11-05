@@ -50,7 +50,10 @@ void start_repl(pthread_t miner) {
 
         // Read the input char by char
         while(!end) {
-            read(STDIN_FILENO, &ch, 1);
+            if(read(STDIN_FILENO, &ch, 1) == -1) {
+                printf("ERROR : Cannot read the user input\n");
+                exit(1);
+            }
             if(ch == '\n' || ch =='\r') {
                 char_buff[cursor] = '\0';
                 end = 1;

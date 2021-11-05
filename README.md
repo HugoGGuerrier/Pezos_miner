@@ -17,5 +17,8 @@ Licence : MIT
 
 * Compile : `make`
 * Run : `make run`
+* Run the test suite : `make test`
 * Install : `make install` then `pezos_miner` to run it
+* Uninstall : `make uninstall`
 * Clean : `make clean`
+* Purge : `make purge`
