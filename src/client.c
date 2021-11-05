@@ -41,12 +41,6 @@ int start_client(const char *addr, unsigned short port) {
     int mode = 0;
     ioctl(sock_id, FIONBIO, &mode);
 
-    // Set the socket timeout
-    struct timeval tv;
-    tv.tv_sec = TIMEOUT_SEC;
-    tv.tv_usec = 0;
-    setsockopt(sock_id, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
-
     // Create the server address
     struct sockaddr_in server_address;
     bzero(&server_address, sizeof(server_address));
