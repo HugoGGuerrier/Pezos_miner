@@ -394,11 +394,109 @@ void test_verify() {
     hash(op_c3, OP_CODE_SIZE_MIN + op_3->data_size, buff + HASH_SIZE);
     hash(buff, HASH_SIZE * 2, tmp);
 
-    char *real = ops_hash(ops);
-    assert(compare_data(tmp, HASH_SIZE, real, HASH_SIZE));
+    char *correct_ops_h = ops_hash(ops);
+    assert(compare_data(tmp, HASH_SIZE, correct_ops_h, HASH_SIZE));
 
     // Create a state
-    
+    Account_t account_1 = new_account(read_hex_string("46f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f"), 10, 20, 30, 40, 50);
+    Account_t account_2 = new_account(read_hex_string("e176367e487a576febd6fd9f53494191b55bb7b5f070d05200d6483aa817078f"), 1, 2, 3, 4, 5);
+    Accounts_t tmpa = new_accounts(account_2, NULL);
+    Accounts_t accounts = new_accounts(account_1, tmpa);
+
+    State_t state = new_state(read_hex_string("aca76354de343ef09385e263fb59561855d3cbf167961c6955624d91aa7eecf5"), 1024, ACCOUNT_CODE_SIZE * 2, accounts);
+
+    // Create the predecesor
+    Block_t pred = new_block(
+        41, 
+        read_hex_string("00f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f"),
+        1024,
+        read_hex_string("01f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f"),
+        read_hex_string("02f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f"),
+        read_hex_string("03f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f03f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f")
+    );
+
+    // Create the correct values
+    long correct_tmsp = 1024 + BLOCK_TIME;
+
+    char *pred_datas = encode_block(pred);
+    char correct_pred_h[HASH_SIZE];
+    hash(pred_datas, BLOCK_CODE_SIZE, correct_pred_h);
+    free(pred_datas);
+
+    char *state_datas = encode_state(state);
+    char correct_state_h[HASH_SIZE];
+    hash(state_datas, STATE_CODE_SIZE_MIN + state->nb_account_bytes, correct_state_h);
+    free(state_datas);
+
+    // Create the tested block
+    Block_t test = new_block(
+        42,
+        read_hex_string("0000000000000000000000000000000000000000000000000000000000000000"),
+        0,
+        read_hex_string("0000000000000000000000000000000000000000000000000000000000000000"),
+        read_hex_string("0000000000000000000000000000000000000000000000000000000000000000"),
+        read_hex_string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+    );
+
+    Operation_t cor1 = verify_bloc(test, pred, state, ops);
+    printf("Correction 1 :\n");
+    print_op(cor1);
+    assert(cor1->op_type == BAD_TIMESTAMP);
+    assert(cor1->data_size == 8);
+    assert(reverse_long(*((unsigned long *) cor1->data)) == correct_tmsp);
+
+    test->timestamp = 1024 + BLOCK_TIME;
+    delete_operation(cor1);
+
+    Operation_t cor2 = verify_bloc(test, pred, state, ops);
+    printf("\nCorrection 2 :\n");
+    print_op(cor2);
+    assert(cor2->op_type == BAD_PREDECESSOR);
+    assert(cor2->data_size == HASH_SIZE);
+    assert(compare_data(correct_pred_h, HASH_SIZE, cor2->data, HASH_SIZE));
+
+    free(test->predecessor);
+    test->predecessor = cor2->data;
+
+    Operation_t cor3 = verify_bloc(test, pred, state, ops);
+    printf("\nCorrection 3 :\n");
+    print_op(cor3);
+    assert(cor3->op_type == BAD_CONTEXT_HASH);
+    assert(cor3->data_size == HASH_SIZE);
+    assert(compare_data(correct_state_h, HASH_SIZE, cor3->data, HASH_SIZE));
+
+    free(test->context_hash);
+    test->context_hash = cor3->data;
+
+    Operation_t cor4 = verify_bloc(test, pred, state, ops);
+    printf("\nCorrection 4 :\n");
+    print_op(cor4);
+
+    free(test->operations_hash);
+    test->operations_hash = correct_ops_h;
+
+    char *block_data = encode_block(test);
+    char *truncated_block_data = (char *) malloc(BLOCK_CODE_SIZE - SIG_SIZE);
+    memcpy(truncated_block_data, block_data, BLOCK_CODE_SIZE - SIG_SIZE);
+    char *sig = (char *) malloc(SIG_SIZE);
+    sign(sig, truncated_block_data, BLOCK_CODE_SIZE - SIG_SIZE);
+    assert(verify(sig, truncated_block_data, BLOCK_CODE_SIZE - SIG_SIZE, state->dictator_public_key));
+
+    free(test->signature);
+    test->signature = sig;
+
+    Operation_t cor5 = verify_bloc(test, pred, state, ops);
+    printf("\nCorrection 5 :\n");
+    print_op(cor5);
+    assert(cor5->op_type == BAD_OPERATIONS_HASH);
+    assert(cor5->data_size == HASH_SIZE);
+    assert(compare_data(correct_ops_h, HASH_SIZE, cor5->data, HASH_SIZE));
+
+    // Free the memory
+    delete_operations(ops);
+    delete_block(test);
+    delete_block(pred);
+    delete_state(state);
 
     printf("\n===> OK\n");
 }

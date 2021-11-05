@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <netdb.h>
 #include <string.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
-#include <sys/time.h>
+#include <pthread.h>
 
 #include "client.h"
 #include "hash.h"
@@ -14,7 +13,7 @@
 // --- Function declaration
 
 int auth();
-int client_loop();
+void *client_loop(void *);
 int test_connection();
 int sanitize_read();
 
@@ -23,19 +22,27 @@ int sanitize_read();
 
 int sock_id;
 char buff[BUFF_SIZE];
+pthread_mutex_t lock;
 Block_t current_head = NULL;
+State_t current_state = NULL;
 
 
 // --- Client running code
 
-int start_client(const char *addr, unsigned short port) {
+pthread_t start_client(const char* addr, unsigned short port) {
     // Create the socket
     sock_id = socket(AF_INET, SOCK_STREAM, 0);
     if(sock_id == -1) {
         printf("ERROR : Cannot create the socket\n");
-        return -1;
+        exit(-1);
     }
-    printf("Socket created !\n");
+
+    // Intialize the mutex
+    pthread_mutexattr_t attr;
+
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&lock, &attr);
 
     // Set the explicit blocking mode
     int mode = 0;
@@ -52,21 +59,25 @@ int start_client(const char *addr, unsigned short port) {
     // Connect to the server
     if(connect(sock_id, (struct sockaddr *)&server_address, sizeof(server_address)) != 0) {
         printf("ERROR : Cannot connect to the server\n");
-        return -1;
+        exit(-1);
     }
     printf("Connected to the dictator server !\n");
 
-    // Authetificate the client
-    printf("Try authentification process...\n");
+    // Authentificate the client
     if(auth() != 0) {
-        printf("ERROR : Authetification failed\n");
-        return -1;
+        printf("ERROR : Authentification failed\n");
+        exit(-1);
     }
     printf("Authentification success !\n");
 
     // Start the client loop
-    printf("Start listening to the server...\n");
-    return client_loop();
+    printf("Start the miner and REPL (type \"help\" for further details)...\n");
+    pthread_t res;
+    if(pthread_create(&res, NULL, &client_loop, NULL) != 0) {
+        printf("ERROR : Cannot start the miner thread\n");
+        exit(-1);
+    }
+    return res;
 }
 
 int auth() {
@@ -78,10 +89,6 @@ int auth() {
     char rand_seed[RAND_SEED_SIZE];
     memcpy(&rand_seed, &buff, RAND_SEED_SIZE);
 
-    // Print the random seed
-    printf("Random seed = ");
-    print_hex(rand_seed, RAND_SEED_SIZE, "\n");
-
     // Get the public key
     char public_key[KEY_SIZE] = PUBLIC_KEY;
 
@@ -90,9 +97,6 @@ int auth() {
     public_key_msg[0] = 0;
     public_key_msg[1] = KEY_SIZE;
     memcpy(public_key_msg + 2, public_key, KEY_SIZE);
-
-    // Print the sending of the public key
-    printf("Sending the public key...\n");
 
     // Send the key to the server
     if(write(sock_id, public_key_msg, 2 + KEY_SIZE) == -1) {
@@ -110,17 +114,11 @@ int auth() {
     rand_hash_sign[1] = SIG_SIZE;
     sign(rand_hash_sign + 2, rand_hash, HASH_SIZE);
 
-    // Print the hash signature and the sending action
-    printf("Sending the random seed hash signature...\n");
-
     // Send the signature to the server
     if(write(sock_id, rand_hash_sign, 2 + SIG_SIZE) == -1) {
         printf("ERROR : Cannot send the random seed hash signature to the server\n");
         return -1;
     }
-
-    // Print the testing connection
-    printf("Testing connection...\n");
 
     // Test the connection
     if(test_connection() != 0) {
@@ -128,18 +126,23 @@ int auth() {
         return -1;
     }
 
-    // Print the success
-    printf("Connection success !\n");
-
     // Return the authetification success
     return 0;
 }
 
-int client_loop() {
+void *client_loop(void *ignored) {
     // Infinite loop to listen to the server
     while(1) {
+        // Sleep until the next block
+        time_t cur_time = time(NULL);
+        int sleep_time = BLOCK_TIME - ((cur_time - current_head->timestamp) + 1);
+        if(sleep_time < 0) sleep_time = 0;
+        sleep(sleep_time);
+
+        // Lock the socket
+        pthread_mutex_lock(&lock);
+
         // Read the next block
-        printf("Waiting for a new block...\n");
         if(sanitize_read() == -1) {
             printf("ERROR : Cannot listen to the server\n");
         }
@@ -149,104 +152,152 @@ int client_loop() {
 
         // If the message is not a current head
         if(msg->msg_type != CURRENT_HEAD) {
-            printf("Unexpected message : \n");
+            printf("\nUnexpected message : \n");
             print_message(msg);
+            printf("> ");
+            fflush(stdout);
         } else {
             
             // Get the block
             Block_t head = get_current_head(msg);
-            printf("New head recieved !\n");
-            print_block(head);
+            printf("\nNew block recieved ! ");
 
 
             // Get the predecessor
             Block_t pred;
             if(current_head == NULL) {
-                // Get the predecessor from the server
-                printf("--- Get the predecessor :\n");
-                Message_t get_pred = new_get_block_message(head->level - 1);
-                Message_t pred_resp = send_message_with_response(get_pred);
-                pred = get_block(pred_resp);
-
-                // Free the memory
-                delete_message(get_pred);
-                delete_message(pred_resp);
-
-                // Display it
-                print_block(pred);
+                pred = get_block_client(head->level - 1);
             } else {
                 pred = current_head;
             }
 
-
             // Get the current state
-            printf("--- Get the current state :\n");
-            Message_t get_cur_state = new_get_state_message(head->level);
-            Message_t state_resp = send_message_with_response(get_cur_state);
-            State_t state = get_state(state_resp);
-
-            // Free the memory
-            delete_message(get_cur_state);
-            delete_message(state_resp);
-
-            // Display the state without all accounts
-            print_state_l(state);
-
+            State_t state = get_state_client(head->level);
 
             // Get the block operations
-            printf("--- Get the block operations :\n");
-            Message_t get_ops = new_get_block_operations_message(head->level);
-            Message_t ops_resp = send_message_with_response(get_ops);
-            Operations_t ops = get_operations(ops_resp);
-
-            // Free the memory
-            delete_message(get_ops);
-            delete_message(ops_resp);
-
-            // Display the operations
-            Operations_t ptr = ops;
-            while (ptr != NULL) {
-                print_op(ptr->head);
-                ptr = ptr->tail;
-            }
+            Operations_t ops = get_ops_client(head->level);
             
             // Verify the bloc
             Operation_t correction = verify_bloc(head, pred, state, ops);
+            printf("Correction : %s\n", op_type_str(correction->op_type));
 
-            printf("--- Correction to the block :\n");
-            print_op(correction);
+            // Set the correct timestamp
+            if(correction->op_type == BAD_TIMESTAMP) {
+                head->timestamp = reverse_long((*(unsigned long *) correction->data));
+            }
 
             // Send the correction
-            printf("Sending the correction...\n");
+            printf("Sending the correction... ");
             Message_t correction_msg = new_inject_operation_message(correction);
             if(send_message(correction_msg) == -1) {
                 printf("ERROR : Cannot send the correction to the client\n");
-                return -1;
+                exit(-1);
             }
-            printf("Done !\n");
+            printf("Done !\n> ");
+            fflush(stdout);
 
             // Free the memory
             delete_block(pred);
-            delete_state(state);
+            delete_state(current_state);
             delete_operations(ops);
             delete_operation(correction);
             delete_message(correction_msg);
 
             // Set the new head
             current_head = head;
+            current_state = state;
 
         }
+
+        pthread_mutex_unlock(&lock);
 
         // Free the memory
         delete_message(msg);
     }
-
-    // Return the success
-    return 0;
 }
 
 
 // --- Client manipulation functions
+
+Block_t get_head_client() {
+    return current_head;
+}
+
+State_t get_state_head_client() {
+    return current_state;
+}
+
+Block_t get_block_client(unsigned int level) {
+    // Create the request message
+    Message_t request;
+    if(level == 0) {
+        request = new_get_current_head_message();
+    } else {
+        request = new_get_block_message(level);
+    }
+
+    // Send the message and get the response
+    Message_t response = send_message_with_response(request);
+
+    // Get the result
+    Block_t res;
+    if(response->msg_type == BLOCK) {
+        res = get_block(response);
+    } else if(response->msg_type == CURRENT_HEAD) {
+        res = get_current_head(response);
+    } else {
+        res = NULL;
+    }
+
+    // Free the memory
+    delete_message(request);
+    delete_message(response);
+
+    // Return the result
+    return res;
+}
+
+State_t get_state_client(unsigned int level) {
+    // Create the request and get the response
+    Message_t request = new_get_state_message(level);
+    Message_t response = send_message_with_response(request);
+
+    // Get the result
+    State_t res;
+    if(response->msg_type == BLOCK_STATE) {
+        res = get_state(response);
+    } else {
+        res = NULL;
+    }
+
+    // Free the memory
+    delete_message(request);
+    delete_message(response);
+
+    // Return the result
+    return res;
+}
+
+Operations_t get_ops_client(unsigned int level) {
+    // Create the request and get the response
+    Message_t request = new_get_block_operations_message(level);
+    Message_t response = send_message_with_response(request);
+
+    // Get the result
+    Operations_t res;
+    if(response->msg_type == BLOCK_OPERATIONS) {
+        res = get_operations(response);
+    } else {
+        res = NULL;
+    }
+
+    // Free the memory
+    delete_message(request);
+    delete_message(response);
+
+    // Return the result
+    return res;
+}
 
 int test_connection() {
     // Prepare the working variables
@@ -258,40 +309,26 @@ int test_connection() {
 
     // Return the result
     if(res != 0 && error != 0) return -1;
-    
-    // Try to get the chain head
-    Message_t get_head = new_get_current_head_message();
-    Message_t response = send_message_with_response(get_head);
-    delete_message(get_head);
-
-    // Test if the response is null
-    if(response == NULL) return -1;
-
-    // Test the message
-    if(response->msg_type != CURRENT_HEAD) {
-        delete_message(response);
-        return -1;
-    }
 
     // Decode the message data
-    Block_t head = get_current_head(response);
+    Block_t head = get_block_client(0);
 
-    // Free the memory
-    delete_message(response);
+    // Verify the head consistency
+    if(head == NULL) return -1;
 
-    // Print the current head
-    printf("Current head : \n");
-    print_block(head);
+    // Set the current head
+    current_head = head;
 
-    // Free the memory
-    delete_block(head);
-
+    State_t state = get_state_client(head->level);
+    current_state = state;
+    head->timestamp = state->predecessor_timestamp + BLOCK_TIME;
 
     // Return the success
     return 0;
 }
 
 int sanitize_read() {
+
     // Read the message and place it in the buffer start + 2
     if(read(sock_id, &buff[2], BUFF_SIZE - 2) == -1) {
         return -1;
@@ -340,6 +377,9 @@ int send_message(Message_t message) {
 }
 
 Message_t send_message_with_response(Message_t message) {
+    // Lock
+    pthread_mutex_lock(&lock);
+
     // Send the message
     if(send_message(message) == -1) {
         return NULL;
@@ -353,6 +393,9 @@ Message_t send_message_with_response(Message_t message) {
 
     // Decode the message
     Message_t res = decode_message(buff);
+
+    // Unlock
+    pthread_mutex_unlock(&lock);
 
     // Return the result
     return res;

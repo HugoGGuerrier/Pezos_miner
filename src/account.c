@@ -9,7 +9,7 @@
 // ----- Memory manipulation functions -----
 
 Account_t new_account(char *user_pub_key, unsigned int lev_pez, unsigned int time_pez, unsigned int op_h_pez, unsigned int ctx_h_pez, unsigned int sig_pez) {
-    Account_t res = (Account_t)malloc(sizeof(struct account));
+    Account_t res = (Account_t) malloc(sizeof(struct account));
     res->user_public_key = user_pub_key;
     res->level_pez = lev_pez;
     res->timestamp_pez = time_pez;
@@ -25,7 +25,7 @@ void delete_account(Account_t account) {
 }
 
 Accounts_t new_accounts(Account_t head, Accounts_t tail) {
-    Accounts_t res = (Accounts_t)malloc(sizeof(struct accounts));
+    Accounts_t res = (Accounts_t) malloc(sizeof(struct accounts));
     res->head = head;
     res->tail = tail;
     return res;
@@ -43,45 +43,45 @@ void delete_accounts(Accounts_t accounts) {
 
 char *encode_account(Account_t account) {
     // Prepare the result encoded data
-    char *data_res = (char *) malloc(ACCOUNT_CODE_SIZE);
+    char *res = (char *) malloc(ACCOUNT_CODE_SIZE);
 
     // Prepare a copy of the address to iterate on
-    char *data_ptr = data_res;
+    char *ptr = res;
 
     // Copy the account user public key
-    memcpy(data_ptr, account->user_public_key, KEY_SIZE);
-    data_ptr += KEY_SIZE;
+    memcpy(ptr, account->user_public_key, KEY_SIZE);
+    ptr += KEY_SIZE;
 
     // Copy the account level pez
     unsigned int real_pez_level = reverse_int(account->level_pez);
-    memcpy(data_ptr, &real_pez_level, sizeof(int));
-    data_ptr += sizeof(int);
+    memcpy(ptr, &real_pez_level, sizeof(int));
+    ptr += sizeof(int);
 
     // Copy the account timestamp pez
     unsigned int real_timstamp_pez = reverse_int(account->timestamp_pez);
-    memcpy(data_ptr, &real_timstamp_pez, sizeof(int));
-    data_ptr += sizeof(int);
+    memcpy(ptr, &real_timstamp_pez, sizeof(int));
+    ptr += sizeof(int);
 
     // Copy the account operation hash pez
     unsigned int real_operation_h_pez = reverse_int(account->operations_hash_pez);
-    memcpy(data_ptr, &real_operation_h_pez, sizeof(int));
-    data_ptr += sizeof(int);
+    memcpy(ptr, &real_operation_h_pez, sizeof(int));
+    ptr += sizeof(int);
 
     // Copy the account context hash pez
     unsigned int real_context_h_pez = reverse_int(account->context_hash_pez);
-    memcpy(data_ptr, &real_context_h_pez, sizeof(int));
-    data_ptr += sizeof(int);
+    memcpy(ptr, &real_context_h_pez, sizeof(int));
+    ptr += sizeof(int);
 
     // Copy the account signature pez
     unsigned int real_sig_pez = reverse_int(account->signature_pez);
-    memcpy(data_ptr, &real_sig_pez, sizeof(int));
+    memcpy(ptr, &real_sig_pez, sizeof(int));
 
-    return data_res;
+    return res;
 }
 
 Account_t decode_account(char *data) {
     // Declarations and allocations
-    char *user_public_key = malloc(KEY_SIZE);
+    char *user_public_key = (char *) malloc(KEY_SIZE);
     unsigned int level_pez;
     unsigned int timestamp_pez;
     unsigned int operations_hash_pez;
