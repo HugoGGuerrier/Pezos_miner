@@ -113,6 +113,6 @@ void print_state_l(State_t state) {
     print_hex(state->dictator_public_key, KEY_SIZE, "\n");
     printf("predecessor_timestamp : %lu\n", state->predecessor_timestamp);
     printf("nb_accounts_bytes : %u\n", state->nb_account_bytes);
-    printf("nb_accouts : %lu\n", state->nb_account_bytes / ACCOUNT_CODE_SIZE);
+    printf("nb_accounts : %lu\n", state->nb_account_bytes / ACCOUNT_CODE_SIZE);
     printf("---------------\n");
 }
