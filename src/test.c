@@ -148,6 +148,7 @@ void test_block() {
     printf("\n===> OK\n");
 }
 
+
 void test_message() {
     // Create example messages
     Message_t msg_1 = new_get_block_message(1024);
@@ -219,6 +220,7 @@ void test_message() {
     
     printf("\n===> OK\n");
 }
+
 
 void test_operation() {
     // Define example operations
@@ -320,6 +322,7 @@ void test_operation() {
     printf("\n===> OK\n");
 }
 
+
 void test_state() {
     // Making a dummy state
     Account_t account_1 = new_account(read_hex_string("46f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f"), 10, 20, 30, 40, 50);
@@ -364,6 +367,43 @@ void test_state() {
     printf("\n===> OK\n");
 }
 
+
+void test_verify() {
+    // Create the example blocks
+    Operation_t op_1 = new_bad_context(read_hex_string("46f097c96542dcd604c7436230daaa4603c39b4ecadd8be8e019d2ce51596f5f"));
+    Operation_t op_2 = new_bad_timestamp(1024);
+    Operation_t op_3 = new_bad_operations(read_hex_string("e176367e487a576febd6fd9f53494191b55bb7b5f070d05200d6483aa817078f"));
+
+    char *op_c1 = encode_operation(op_1);
+    char *op_c2 = encode_operation(op_2);
+    char *op_c3 = encode_operation(op_3);
+
+    // Create the operations
+    Operations_t tmp1 = new_operations(op_1, NULL);
+    Operations_t tmp2 = new_operations(op_2, tmp1);
+    Operations_t ops = new_operations(op_3, tmp2);
+
+    // Verify the ops hash
+    char tmp[HASH_SIZE];
+    char buff[HASH_SIZE * 2];
+
+    hash(op_c1, OP_CODE_SIZE_MIN + op_1->data_size, buff);
+    hash(op_c2, OP_CODE_SIZE_MIN + op_2->data_size, buff + HASH_SIZE);
+    hash(buff, HASH_SIZE * 2, tmp);
+    memcpy(buff, tmp, HASH_SIZE);
+    hash(op_c3, OP_CODE_SIZE_MIN + op_3->data_size, buff + HASH_SIZE);
+    hash(buff, HASH_SIZE * 2, tmp);
+
+    char *real = ops_hash(ops);
+    assert(compare_data(tmp, HASH_SIZE, real, HASH_SIZE));
+
+    // Create a state
+    
+
+    printf("\n===> OK\n");
+}
+
+
 void run_tests() {
     printf("===============================================\n");
     printf("==================== TESTS ====================\n");
@@ -392,6 +432,9 @@ void run_tests() {
     
     printf("\n========== Test State ==========\n\n");
     test_state();
+
+    printf("\n========== Test Block Verify ==========\n\n");
+    test_verify();
 
     printf("\n===============================================\n");
 }

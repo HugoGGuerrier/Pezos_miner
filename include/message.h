@@ -5,8 +5,8 @@
 #include "operation.h"
 #include "state.h"
 
-#define MSG_SIZE_SIZE 2
-#define MSG_TAG_SIZE 2
+#define MSG_SIZE_SIZE sizeof(short)
+#define MSG_TAG_SIZE sizeof(short)
 #define MSG_CODE_SIZE_MIN (MSG_SIZE_SIZE + MSG_TAG_SIZE)
 
 

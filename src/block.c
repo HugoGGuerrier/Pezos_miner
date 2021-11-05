@@ -113,62 +113,7 @@ Block_t decode_block(char *data) {
 
 // ----- Block verification -----
 
-char *ops_hash(Operations_t ops) {
-    char *res_buf = (char *) malloc(HASH_SIZE);
-
-    // If the head is NULL, just set the buffer to 0
-    if (ops->head == NULL) {
-        memset(res_buf, 0, HASH_SIZE);
-    } 
-    
-    // Else process the ops hashing
-    else {
-        // Get the current operation
-        Operation_t op = ops->head;
-        char *op_code = encode_operation(op);
-        size_t op_code_size = OP_CODE_SIZE_MIN + op->data_size;
-
-        // If the tail is null, just return the head hash
-        if (ops->tail == NULL) {
-            hash(op_code, op_code_size, res_buf);
-        }
-        
-        // Else recursively process the list
-        else {
-            // Get the hash of the tail and prepare the hash of the head
-            char *rest_hash = ops_hash(ops->tail); 
-            char *head_hash = (char *) malloc(HASH_SIZE);
-
-            // Hash the head
-            hash(op_code, op_code_size, head_hash);
-
-            // Create a temporary buffer to concatenate the hashs
-            char *tmp_buf = (char *) malloc(HASH_SIZE * 2);
-            memcpy(tmp_buf, rest_hash, HASH_SIZE);
-            memcpy(tmp_buf + HASH_SIZE, head_hash, HASH_SIZE);
-            
-            // Hash the concatenation
-            hash(tmp_buf, HASH_SIZE * 2, res_buf);
-
-            // Free the memory
-            free(rest_hash);
-            free(head_hash);
-            free(tmp_buf);
-        }
-
-        // Free the operation code
-        free(op_code);
-    }
-
-    // Return the result
-    return res_buf;
-}
-
 Operation_t verify_bloc(Block_t b, Block_t pred, State_t state, Operations_t ops) {
-    // Block_t pred = get_block(send_message_with_response(new_get_block_message(b->level - 1)));
-    // State_t state = get_state(send_message_with_response(new_get_state_message(b->level)));
-    // Operations_t ops = get_operations(send_message_with_response(new_get_block_operations_message(b->level)));
-
     // Verifying timestamp
     long time = b->timestamp - pred->timestamp;
     if (time < BLOCK_TIME) {
@@ -179,32 +124,34 @@ Operation_t verify_bloc(Block_t b, Block_t pred, State_t state, Operations_t ops
     char *pred_datas = encode_block(pred);
     char *pred_hash_res = (char *) malloc(HASH_SIZE);
     hash(pred_datas, BLOCK_CODE_SIZE, pred_hash_res);
+    free(pred_datas);
     
     if (!compare_data(b->predecessor, HASH_SIZE, pred_hash_res, HASH_SIZE)) {
         return new_bad_predecessor(pred_hash_res);
     }
-    free(pred_datas);
+    free(pred_hash_res);
 
     // Verifying state hash
     char *state_datas = encode_state(state);
     char *state_hash_res = (char *) malloc(HASH_SIZE);
     hash(state_datas, STATE_CODE_SIZE_MIN + state->nb_account_bytes, state_hash_res);
+    free(state_datas);
     
     if (!compare_data(b->context_hash, HASH_SIZE, state_hash_res, HASH_SIZE)) {
         return new_bad_context(state_hash_res);
     }
-    free(state_datas);
+    free(state_hash_res);
 
     // Verifying signature
     char *block_data = encode_block(b);
     char *truncated_block_data = (char *) malloc(BLOCK_CODE_SIZE - SIG_SIZE);
-
     memcpy(truncated_block_data, block_data, BLOCK_CODE_SIZE - SIG_SIZE);
+    free(block_data);
+
     if (!verify(b->signature, truncated_block_data, BLOCK_CODE_SIZE - SIG_SIZE, state->dictator_public_key)) {
+        free(truncated_block_data);
         return new_bad_signature();
     }
-    free(truncated_block_data);
-    free(block_data);
 
     // Verifying operations hash
     // ... Unnecessary as ops hash must be faulty if everything else is fine

@@ -1,7 +1,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-#define OP_TAG_SIZE 2
+#define OP_TAG_SIZE sizeof(short)
 #define OP_CODE_SIZE_MIN (OP_TAG_SIZE + SIG_SIZE + KEY_SIZE)
 
 
@@ -88,6 +88,9 @@ Operations_t decode_operations(char *data, size_t data_size);
 
 // Get the string for an operation type
 char *op_type_str(const Operation_Type_t type);
+
+// Hash an operation list
+char *ops_hash(Operations_t ops);
 
 // Print an operation
 void print_op(Operation_t op);

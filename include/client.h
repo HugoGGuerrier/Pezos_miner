@@ -5,7 +5,6 @@
 
 #define BUFF_SIZE 65536
 #define RAND_SEED_SIZE 24
-#define TIMEOUT_SEC 10
 
 
 // Start the client and do the login on the server

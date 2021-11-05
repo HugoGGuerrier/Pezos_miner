@@ -16,15 +16,14 @@
 int auth();
 int client_loop();
 int test_connection();
-int handle_message();
 int sanitize_read();
 
 
 // --- Global variables definition
 
 int sock_id;
-
 char buff[BUFF_SIZE];
+Block_t current_head = NULL;
 
 
 // --- Client running code
@@ -94,8 +93,6 @@ int auth() {
 
     // Print the sending of the public key
     printf("Sending the public key...\n");
-    printf("Message = ");
-    print_hex(public_key_msg, 2 + KEY_SIZE, "\n");
 
     // Send the key to the server
     if(write(sock_id, public_key_msg, 2 + KEY_SIZE) == -1) {
@@ -115,8 +112,6 @@ int auth() {
 
     // Print the hash signature and the sending action
     printf("Sending the random seed hash signature...\n");
-    printf("Random seed hash signature message = ");
-    print_hex(rand_hash_sign, 2 + SIG_SIZE, "\n");
 
     // Send the signature to the server
     if(write(sock_id, rand_hash_sign, 2 + SIG_SIZE) == -1) {
@@ -133,10 +128,120 @@ int auth() {
         return -1;
     }
 
+    // Print the success
+    printf("Connection success !\n");
+
+    // Return the authetification success
     return 0;
 }
 
 int client_loop() {
+    // Infinite loop to listen to the server
+    while(1) {
+        // Read the next block
+        printf("Waiting for a new block...\n");
+        if(sanitize_read() == -1) {
+            printf("ERROR : Cannot listen to the server\n");
+        }
+
+        // Read the message
+        Message_t msg = decode_message(buff);
+
+        // If the message is not a current head
+        if(msg->msg_type != CURRENT_HEAD) {
+            printf("Unexpected message : \n");
+            print_message(msg);
+        } else {
+            
+            // Get the block
+            Block_t head = get_current_head(msg);
+            printf("New head recieved !\n");
+            print_block(head);
+
+
+            // Get the predecessor
+            Block_t pred;
+            if(current_head == NULL) {
+                // Get the predecessor from the server
+                printf("--- Get the predecessor :\n");
+                Message_t get_pred = new_get_block_message(head->level - 1);
+                Message_t pred_resp = send_message_with_response(get_pred);
+                pred = get_block(pred_resp);
+
+                // Free the memory
+                delete_message(get_pred);
+                delete_message(pred_resp);
+
+                // Display it
+                print_block(pred);
+            } else {
+                pred = current_head;
+            }
+
+
+            // Get the current state
+            printf("--- Get the current state :\n");
+            Message_t get_cur_state = new_get_state_message(head->level);
+            Message_t state_resp = send_message_with_response(get_cur_state);
+            State_t state = get_state(state_resp);
+
+            // Free the memory
+            delete_message(get_cur_state);
+            delete_message(state_resp);
+
+            // Display the state without all accounts
+            print_state_l(state);
+
+
+            // Get the block operations
+            printf("--- Get the block operations :\n");
+            Message_t get_ops = new_get_block_operations_message(head->level);
+            Message_t ops_resp = send_message_with_response(get_ops);
+            Operations_t ops = get_operations(ops_resp);
+
+            // Free the memory
+            delete_message(get_ops);
+            delete_message(ops_resp);
+
+            // Display the operations
+            Operations_t ptr = ops;
+            while (ptr != NULL) {
+                print_op(ptr->head);
+                ptr = ptr->tail;
+            }
+            
+            // Verify the bloc
+            Operation_t correction = verify_bloc(head, pred, state, ops);
+
+            printf("--- Correction to the block :\n");
+            print_op(correction);
+
+            // Send the correction
+            printf("Sending the correction...\n");
+            Message_t correction_msg = new_inject_operation_message(correction);
+            if(send_message(correction_msg) == -1) {
+                printf("ERROR : Cannot send the correction to the client\n");
+                return -1;
+            }
+            printf("Done !\n");
+
+            // Free the memory
+            delete_block(pred);
+            delete_state(state);
+            delete_operations(ops);
+            delete_operation(correction);
+            delete_message(correction_msg);
+
+            // Set the new head
+            current_head = head;
+
+        }
+
+        // Free the memory
+        delete_message(msg);
+    }
+
+    // Return the success
     return 0;
 }
 
@@ -157,31 +262,32 @@ int test_connection() {
     // Try to get the chain head
     Message_t get_head = new_get_current_head_message();
     Message_t response = send_message_with_response(get_head);
+    delete_message(get_head);
 
     // Test if the response is null
     if(response == NULL) return -1;
 
+    // Test the message
+    if(response->msg_type != CURRENT_HEAD) {
+        delete_message(response);
+        return -1;
+    }
+
     // Decode the message data
     Block_t head = get_current_head(response);
 
-    // Test the message
-    if(response->msg_type != CURRENT_HEAD) return -1;
+    // Free the memory
+    delete_message(response);
 
     // Print the current head
     printf("Current head : \n");
     print_block(head);
 
     // Free the memory
-    delete_message(get_head);
-    delete_message(response);
     delete_block(head);
 
-    // Return the success
-    return 0;
-}
 
-int handle_message() {
-    // TODO : Handle the message recieving
+    // Return the success
     return 0;
 }
 
@@ -202,17 +308,21 @@ int sanitize_read() {
         break;
 
     case 6:
-        msg_size = MSG_TAG_SIZE + 2 + *((unsigned short *) &buff[4]);
+        msg_size = reverse_short(*((unsigned short *) &buff[4])) + MSG_TAG_SIZE + 2;
         break;
 
     case 8:
-        msg_size = MSG_TAG_SIZE + STATE_CODE_SIZE_MIN + *((unsigned int *) &buff[44]);
+        msg_size = reverse_int(*((unsigned int *) &buff[44])) + MSG_TAG_SIZE + STATE_CODE_SIZE_MIN;
         break;
     
     default:
         printf("Cannot sanitize the buffer : Unknown message tag %hd\n", tag);
         exit(1);
     }
+
+    // Set the message size
+    buff[0] = (msg_size & 0xff00) >> 8;
+    buff[1] = (msg_size & 0x00ff);
 
     return 0;
 }
