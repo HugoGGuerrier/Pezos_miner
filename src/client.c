@@ -160,7 +160,7 @@ void *client_loop(void *ignored) {
             
             // Get the block
             Block_t head = get_current_head(msg);
-            printf("\nNew block recieved ! ");
+            printf("\nNew block received ! ");
 
 
             // Get the predecessor
