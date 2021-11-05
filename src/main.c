@@ -15,8 +15,8 @@ int main(int argc, const char *argv[]) {
     }
 
     // Define application data
-    // const char *address = "78.194.168.67";
-    const char *address = "78.194.168.65";
+    const char *address = "78.194.168.67";
+    // const char *address = "78.194.168.65";
     unsigned int port = 1337;
 
     // Start the client
