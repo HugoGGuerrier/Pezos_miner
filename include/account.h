@@ -56,7 +56,7 @@ Account_t decode_account(char *data);
 Accounts_t decode_accounts(char *data, size_t size);
 
 
-// ----- utils functions -----
+// ----- Utils functions -----
 
 // Print an account
 void print_account(Account_t account);
