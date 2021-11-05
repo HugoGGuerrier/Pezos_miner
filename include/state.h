@@ -43,4 +43,7 @@ State_t decode_state(char *data);
 // Print a state
 void print_state(State_t state);
 
+// Print a state with only account number
+void print_state_l(State_t state);
+
 #endif

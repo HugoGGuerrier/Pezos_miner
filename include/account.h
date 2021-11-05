@@ -1,7 +1,7 @@
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
 
-#define ACCOUNT_CODE_SIZE (KEY_SIZE + 5*4) 
+#define ACCOUNT_CODE_SIZE (KEY_SIZE + 5 * sizeof(int)) 
 
 
 // ----- Types and enum defining -----

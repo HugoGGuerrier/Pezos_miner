@@ -106,3 +106,13 @@ void print_state(State_t state) {
     printf("]\n");
     printf("---------------\n");
 }
+
+void print_state_l(State_t state) {
+    printf("---- STATE ----\n");
+    printf("dictator_public_key : ");
+    print_hex(state->dictator_public_key, KEY_SIZE, "\n");
+    printf("predecessor_timestamp : %lu\n", state->predecessor_timestamp);
+    printf("nb_accounts_bytes : %u\n", state->nb_account_bytes);
+    printf("nb_accouts : %u\n", state->nb_account_bytes / ACCOUNT_CODE_SIZE);
+    printf("---------------\n");
+}

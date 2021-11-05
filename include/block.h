@@ -5,7 +5,7 @@
 #include "operation.h"
 
 #define BLOCK_TIME 600
-#define BLOCK_CODE_SIZE (SIG_SIZE + HASH_SIZE * 3 + 8 + 4)
+#define BLOCK_CODE_SIZE (SIG_SIZE + HASH_SIZE * 3 + sizeof(long) + sizeof(int))
 
 
 // ----- Types and enum defining -----

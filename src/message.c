@@ -154,7 +154,7 @@ Block_t get_block(Message_t message) {
 }
 
 Operations_t get_operations(Message_t message) {
-    return decode_operations(message->data, (size_t) message->data_size);
+    return decode_operations(message->data + 2, (size_t) message->data_size - 2);
 }
 
 State_t get_state(Message_t message) {

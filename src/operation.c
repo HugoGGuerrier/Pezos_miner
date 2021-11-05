@@ -287,8 +287,8 @@ Operations_t decode_operations(char *data, size_t size) {
         res = tmp;
 
         // Increment data and cursor
-        cursor += OP_TAG_SIZE + op->data_size + KEY_SIZE + SIG_SIZE;
-        data += OP_TAG_SIZE + op->data_size + KEY_SIZE + SIG_SIZE;
+        cursor += OP_CODE_SIZE_MIN + op->data_size;
+        data += OP_CODE_SIZE_MIN + op->data_size;
     }
 
     // Return the result
@@ -321,8 +321,55 @@ char *op_type_str(const Operation_Type_t type) {
     }
 }
 
+char *ops_hash(Operations_t ops) {
+    // Prepare the result
+    char *res_buf = (char *) malloc(HASH_SIZE);
 
-// ----- Utils functions -----
+    // If the head is NULL, just set the buffer to 0
+    if (ops->head == NULL) {
+        memset(res_buf, 0, HASH_SIZE);
+    } 
+    
+    // Else process the ops hashing
+    else {
+        // Get the current operation
+        Operation_t op = ops->head;
+        char *op_code = encode_operation(op);
+        size_t op_code_size = OP_CODE_SIZE_MIN + op->data_size;
+
+        // If the tail is null, just return the head hash
+        if (ops->tail == NULL) {
+            hash(op_code, op_code_size, res_buf);
+        }
+        
+        // Else recursively process the list
+        else {
+            // Get the hash of the tail and prepare the hash of the head
+            char *rest_hash = ops_hash(ops->tail); 
+            char head_hash[HASH_SIZE];
+
+            // Hash the head
+            hash(op_code, op_code_size, head_hash);
+
+            // Create a temporary buffer to concatenate the hashs
+            char tmp_buf[HASH_SIZE * 2];
+            memcpy(tmp_buf, rest_hash, HASH_SIZE);
+            memcpy(tmp_buf + HASH_SIZE, head_hash, HASH_SIZE);
+            
+            // Hash the concatenation
+            hash(tmp_buf, HASH_SIZE * 2, res_buf);
+
+            // Free the memory
+            free(rest_hash);
+        }
+
+        // Free the operation code
+        free(op_code);
+    }
+
+    // Return the result
+    return res_buf;
+}
 
 void print_op(Operation_t op) {
     printf("--- OPERATION ---\n");
