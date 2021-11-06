@@ -86,7 +86,7 @@ void test_account() {
 
     // Compare to the expected decoded account (initial account)
     assert(compare_data(user_public_key, KEY_SIZE, decoded->user_public_key, KEY_SIZE));
-    assert(level_pez == decoded->level_pez);
+    assert(level_pez == decoded->predecessor_pez);
     assert(timestamp_pez == decoded->timestamp_pez);
     assert(operations_hash_pez == decoded->operations_hash_pez);
     assert(context_hash_pez == decoded->context_hash_pez);

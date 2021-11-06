@@ -142,22 +142,15 @@ Operation_t verify_bloc(Block_t b, Block_t pred, State_t state, Operations_t ops
     }
     free(state_hash_res);
 
-    // Verifying signature
-    char *block_data = encode_block(b);
-    char *truncated_block_data = (char *) malloc(BLOCK_CODE_SIZE - SIG_SIZE);
-    memcpy(truncated_block_data, block_data, BLOCK_CODE_SIZE - SIG_SIZE);
-    free(block_data);
-
-    if (!verify(b->signature, truncated_block_data, BLOCK_CODE_SIZE - SIG_SIZE, state->dictator_public_key)) {
-        free(truncated_block_data);
-        return new_bad_signature();
-    }
-
     // Verifying operations hash
-    // ... Unnecessary as ops hash must be faulty if everything else is fine
-    // We do it last as it should be the most ressce-consumming verification
     char *ops_h = ops_hash(ops);
-    return new_bad_operations(ops_h);
+    if(!compare_data(ops_h, HASH_SIZE, b->operations_hash, HASH_SIZE)) {
+        return new_bad_operations(ops_h);
+    }
+    free(ops_h);
+
+    // Verifying signature
+    return new_bad_signature();    
 }
 
 

@@ -11,7 +11,7 @@
 Account_t new_account(char *user_pub_key, unsigned int lev_pez, unsigned int time_pez, unsigned int op_h_pez, unsigned int ctx_h_pez, unsigned int sig_pez) {
     Account_t res = (Account_t) malloc(sizeof(struct account));
     res->user_public_key = user_pub_key;
-    res->level_pez = lev_pez;
+    res->predecessor_pez = lev_pez;
     res->timestamp_pez = time_pez;
     res->operations_hash_pez = op_h_pez;
     res->context_hash_pez = ctx_h_pez;
@@ -53,7 +53,7 @@ char *encode_account(Account_t account) {
     ptr += KEY_SIZE;
 
     // Copy the account level pez
-    unsigned int real_pez_level = reverse_int(account->level_pez);
+    unsigned int real_pez_level = reverse_int(account->predecessor_pez);
     memcpy(ptr, &real_pez_level, sizeof(int));
     ptr += sizeof(int);
 
@@ -149,9 +149,9 @@ void print_account(Account_t account) {
     printf("--- ACCOUNT ---\n");
     printf("user public key : ");
     print_hex(account->user_public_key, HASH_SIZE, "\n");
-    printf("level_pez : %u\n", account->level_pez);
+    printf("predecessor_pez : %u\n", account->predecessor_pez);
     printf("timestamp_pez : %u\n", account->timestamp_pez);
-    printf("operations hash_pez : %u\n", account->operations_hash_pez);
+    printf("operations_hash_pez : %u\n", account->operations_hash_pez);
     printf("context_hash_pez : %u\n", account->context_hash_pez);
     printf("signature_pez : %u\n", account->signature_pez);
     printf("---------------\n");

@@ -12,7 +12,7 @@ typedef struct account *Account_t;
 struct account
 {
     char *user_public_key;
-    unsigned int level_pez;
+    unsigned int predecessor_pez;
     unsigned int timestamp_pez;
     unsigned int operations_hash_pez;
     unsigned int context_hash_pez;
