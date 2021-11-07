@@ -215,18 +215,26 @@ void get_next() {
 }
 
 void get_block_repl(unsigned int level) {
-    printf("Block %u :\n", level);
-    Block_t block = get_block_client(level);
-    print_block(block);
-    delete_block(block);
+    if(level > 0 && level <= get_head_client()->level) {
+        printf("Block %u :\n", level);
+        Block_t block = get_block_client(level);
+        print_block(block);
+        delete_block(block);
+    } else {
+        printf("Cannot get the block %u\n", level);
+    }
 }
 
 void get_state_repl(unsigned int level, unsigned char full) {
-    printf("State %u :\n", level);
-    State_t state = get_state_client(level);
-    if(full) print_state(state);
-    else print_state_l(state);
-    delete_state(state);
+    if(level > 0 && level <= get_head_client()->level) {
+        printf("State %u :\n", level);
+        State_t state = get_state_client(level);
+        if(full) print_state(state);
+        else print_state_l(state);
+        delete_state(state);
+    } else {
+        printf("Cannot get the state %u\n", level);
+    }
 }
 
 void display_help() {
