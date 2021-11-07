@@ -468,6 +468,13 @@ void test_verify() {
     free(test->context_hash);
     test->context_hash = cor3->data;
 
+    Operation_t cor5 = verify_bloc(test, pred, state, ops);
+    printf("\nCorrection 5 :\n");
+    print_op(cor5);
+    assert(cor5->op_type == BAD_OPERATIONS_HASH);
+    assert(cor5->data_size == HASH_SIZE);
+    assert(compare_data(correct_ops_h, HASH_SIZE, cor5->data, HASH_SIZE));
+
     Operation_t cor4 = verify_bloc(test, pred, state, ops);
     printf("\nCorrection 4 :\n");
     print_op(cor4);
@@ -484,13 +491,6 @@ void test_verify() {
 
     free(test->signature);
     test->signature = sig;
-
-    Operation_t cor5 = verify_bloc(test, pred, state, ops);
-    printf("\nCorrection 5 :\n");
-    print_op(cor5);
-    assert(cor5->op_type == BAD_OPERATIONS_HASH);
-    assert(cor5->data_size == HASH_SIZE);
-    assert(compare_data(correct_ops_h, HASH_SIZE, cor5->data, HASH_SIZE));
 
     // Free the memory
     delete_operations(ops);
